@@ -8,3 +8,5 @@ preview-server.ps1
 kemesser-original.html
 使用说明.txt
 *说明.txt
+preview-server*.ps1
+Start-Kemesser-Website*.bat

@@ -21,6 +21,24 @@ body {
 }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; }
+button,
+a,
+input,
+select,
+textarea,
+label {
+  pointer-events: auto;
+}
+img,
+video,
+.hero-shade,
+.ripple,
+.about-hero-media::before,
+.thawing-type-card::before,
+.clean-visual::before,
+.map-card::before {
+  pointer-events: none;
+}
 
 .site-header {
   position: fixed;
@@ -33,6 +51,13 @@ button { font: inherit; }
   padding: 22px clamp(22px, 5vw, 76px);
   color: var(--white);
   transition: background 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+  pointer-events: auto;
+}
+.site-header a,
+.site-header button {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
 }
 .site-header.light { color: var(--ink); }
 .site-header.is-scrolled,
@@ -779,6 +804,154 @@ button { font: inherit; }
 .map-card span { color: #a6ffd0; font-weight: 900; letter-spacing: 0.16em; text-transform: uppercase; }
 .map-card strong { margin-top: 18px; font-size: 34px; }
 .map-card em { margin-top: 10px; color: rgba(255,255,255,.75); font-style: normal; }
+.map-card.map-embed {
+  display: block;
+  min-height: 520px;
+  padding: 0;
+  background: #eef5f2;
+}
+.map-card.map-embed::before {
+  display: none;
+}
+.map-frame {
+  display: block;
+  width: 100%;
+  height: 520px;
+  min-height: 520px;
+  border: 0;
+  border-radius: 22px;
+  background: #eef5f2;
+}
+
+.utility-panel,
+.form-section {
+  background: linear-gradient(180deg, #f4faf6, #ffffff);
+}
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.filter-bar input,
+.filter-bar select,
+.kemesser-form input,
+.kemesser-form textarea,
+.kemesser-form select {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 16px;
+  color: var(--ink);
+  background: #ffffff;
+  font: inherit;
+}
+.filter-bar input,
+.filter-bar select {
+  flex: 1 1 240px;
+}
+.table-card,
+.kemesser-form,
+.record-card,
+.empty-state {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 18px 48px rgba(3, 40, 28, 0.08);
+}
+.table-card {
+  overflow-x: auto;
+}
+.download-table {
+  width: 100%;
+  min-width: 920px;
+  border-collapse: collapse;
+}
+.download-table th,
+.download-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.65;
+}
+.download-table th {
+  color: var(--ink);
+  background: #f4faf6;
+  font-weight: 900;
+}
+.table-link {
+  color: var(--green);
+  font-weight: 900;
+}
+.empty-state {
+  margin-top: 18px;
+  padding: 28px;
+  color: var(--muted);
+  text-align: center;
+}
+.kemesser-form {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 44px);
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.kemesser-form label {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+  color: var(--ink);
+  font-weight: 800;
+}
+.kemesser-form textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+.privacy-check {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--muted) !important;
+  font-weight: 500 !important;
+  line-height: 1.8;
+}
+.privacy-check input {
+  width: 18px;
+  min-height: 18px;
+  margin-top: 5px;
+}
+.form-message {
+  min-height: 28px;
+  color: var(--green);
+  font-weight: 900;
+}
+.btn-ghost.dark {
+  color: var(--ink);
+  border-color: var(--line);
+  background: #ffffff;
+}
+.records-list {
+  display: grid;
+  gap: 18px;
+}
+.record-card {
+  padding: 24px;
+}
+.record-card h2 {
+  margin-top: 0;
+}
+.record-card pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  padding: 18px;
+  border-radius: 14px;
+  background: #f4faf6;
+}
 
 .site-footer {
   color: rgba(255, 255, 255, 0.76);
@@ -936,7 +1109,8 @@ button { font: inherit; }
   .model-grid,
   .product-list.narrow-two,
   .detail-gallery,
-  .function-grid { grid-template-columns: 1fr; }
+  .function-grid,
+  .form-grid { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; }
   .thawing-type-card { min-height: 480px; }
