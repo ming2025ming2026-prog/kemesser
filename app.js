@@ -96,6 +96,14 @@ document.querySelectorAll(".main-nav").forEach((nav) => {
   });
 });
 
+
+document.querySelectorAll("[data-card-link]").forEach((card) => {
+  card.addEventListener("click", (event) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const href = card.dataset.cardLink || card.getAttribute("href");
+    if (href) window.location.href = href;
+  });
+});
 document.querySelectorAll(".nav-cta").forEach((cta) => {
   if (!cta.href.includes("mailto:")) cta.href = "inquiry.html";
 });
