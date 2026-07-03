@@ -68,7 +68,7 @@ if (footer) {
         <a href="mailto:rain@kemesser.com">rain@kemesser.com</a>
         <a href="mailto:demi@kemesser.com">demi@kemesser.com</a>
         <strong>地址</strong>
-        <a href="contact.html">浙江省杭州市上城区笕丁路168号14幢206室</a>
+        <a href="contact.html">浙江省杭州市上城区丁兰街道桃花湖慧星中心1号楼610室、611室</a>
       </div>
     </div>
     <div class="footer-bottom">
