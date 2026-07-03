@@ -1,9 +1,29 @@
-const header = document.querySelector("[data-header]");
+﻿const header = document.querySelector("[data-header]");
 const menuButton = document.querySelector("[data-menu-button]");
 const heroVideo = document.querySelector("[data-hero-video]");
 const footer = document.querySelector(".site-footer");
 
 document.body.classList.add("page-enter");
+
+if (heroVideo) {
+  const loadHeroVideo = () => {
+    heroVideo.querySelectorAll("source[data-src]").forEach((source) => {
+      source.src = source.dataset.src;
+      source.removeAttribute("data-src");
+    });
+    heroVideo.load();
+    heroVideo.play().catch(() => {});
+  };
+  const scheduleHeroVideo = () => {
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(loadHeroVideo, { timeout: 1400 });
+    } else {
+      setTimeout(loadHeroVideo, 700);
+    }
+  };
+  if (document.readyState === "complete") scheduleHeroVideo();
+  else window.addEventListener("load", scheduleHeroVideo, { once: true });
+}
 
 if (footer) {
   footer.innerHTML = `
