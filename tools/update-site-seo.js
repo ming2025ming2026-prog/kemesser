@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const version = '20260715-8';
-const pages = fs.readdirSync(root).filter(file => file.endsWith('.html') && !file.startsWith('admin') && !file.includes('original'));
+const version = '20260716-9';
+const pages = fs.readdirSync(path.join(root, 'en')).filter(file => file.endsWith('.html'));
 
 for (const file of pages) {
   const fullPath = path.join(root, file);
