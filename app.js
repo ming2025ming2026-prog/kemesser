@@ -3,6 +3,7 @@ const menuButton = document.querySelector("[data-menu-button]");
 const heroVideo = document.querySelector("[data-hero-video]");
 const footer = document.querySelector(".site-footer");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const isEnglish = document.documentElement.lang.toLowerCase().startsWith("en");
 
 menuButton?.setAttribute("aria-expanded", "false");
 
@@ -46,7 +47,29 @@ if (heroVideo) {
 }
 
 if (footer) {
-  footer.innerHTML = `
+  footer.innerHTML = isEnglish ? `
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="../assets/brand/kemesser-logo.png" alt="Kemesser Technology" />
+        <p>Reliable, standardized and traceable low-temperature solutions for cell cryopreservation, thawing and cold operations in research, biobanking, hospitals and laboratories.</p>
+        <div class="footer-actions">
+          <a class="footer-button primary" href="inquiry.html">Sales Inquiry</a>
+          <a class="footer-button" href="support.html">After-sales Service</a>
+          <a class="footer-button" href="downloads.html">Download Center</a>
+        </div>
+      </div>
+      <div class="footer-col"><h3>Navigation</h3><a href="index.html">Home</a><a href="about.html">About Us</a><a href="downloads.html">Downloads</a></div>
+      <div class="footer-col"><h3>Service & Contact</h3><a href="inquiry.html">Sales Inquiry</a><a href="support.html">After-sales Service</a><a href="contact.html">Contact Us</a></div>
+      <div class="footer-col"><h3>Product Series</h3><a href="thawing.html">Thawing</a><a href="cryo.html">Cryopreservation</a><a href="cold-operation.html">Cold Operation</a></div>
+      <div class="footer-col"><h3>Featured Products</h3><a href="product-thawline.html">ThawLINE</a><a href="product-thawline-pro.html">ThawLINE Pro</a><a href="product-thawwaker.html">ThawWaker</a><a href="product-cellhome.html">CellHome</a></div>
+      <div class="footer-contact">
+        <h3>Contact</h3><strong>Tel</strong><a href="tel:057187156759">+86 571 8715 6759</a><a href="tel:057187156259">+86 571 8715 6259</a>
+        <strong>Email</strong><a href="mailto:andy@kemesser.com">andy@kemesser.com</a><a href="mailto:rain@kemesser.com">rain@kemesser.com</a><a href="mailto:demi@kemesser.com">demi@kemesser.com</a>
+        <strong>Address</strong><a href="contact.html">Rooms 610 & 611, Building 1, Huixing Center, Taohuahu, Dinglan Subdistrict, Shangcheng District, Hangzhou, Zhejiang, China</a>
+      </div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Hangzhou Kemesser Technology Co., Ltd.</span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">Zhejiang ICP No. 13016285-2</a></div>
+  ` : `
     <div class="footer-inner">
       <div class="footer-brand">
         <img src="assets/brand/kemesser-logo.png" alt="Kemesser Technology" />
@@ -108,8 +131,8 @@ const inquiryProductByPage = {
   "product-thawline.html": "ThawLINE",
   "product-thawline-pro.html": "ThawLINE Pro",
   "product-thawwaker.html": "ThawWaker",
-  "product-thawhome.html": "ThawHome 管式",
-  "product-thawhome-bag.html": "ThawHome 袋式",
+  "product-thawhome.html": isEnglish ? "ThawHome Tube" : "ThawHome 管式",
+  "product-thawhome-bag.html": isEnglish ? "ThawHome Bag" : "ThawHome 袋式",
   "product-mobithaw.html": "MobiThaw",
   "product-cellhome.html": "CellHome",
   "product-coolhome.html": "CoolHome",
@@ -133,7 +156,7 @@ document.querySelectorAll(".main-nav").forEach((nav) => {
   if (!downloadsLink) {
     downloadsLink = document.createElement("a");
     downloadsLink.href = "downloads.html";
-    downloadsLink.textContent = "下载中心";
+    downloadsLink.textContent = isEnglish ? "Downloads" : "下载中心";
     nav.append(downloadsLink);
   }
 
@@ -149,15 +172,22 @@ document.querySelectorAll(".main-nav").forEach((nav) => {
   dropdown.className = "nav-dropdown";
   dropdown.innerHTML = `
     <button class="nav-dropdown-trigger" type="button" aria-expanded="false" aria-haspopup="true">
-      <span>服务与联系</span>
+      <span>${isEnglish ? "Service & Contact" : "服务与联系"}</span>
     </button>
     <div class="nav-dropdown-menu">
-      <a href="inquiry.html">售前咨询</a>
-      <a href="support.html">售后服务</a>
-      <a href="contact.html">联系我们</a>
+      <a href="inquiry.html">${isEnglish ? "Sales Inquiry" : "售前咨询"}</a>
+      <a href="support.html">${isEnglish ? "After-sales Service" : "售后服务"}</a>
+      <a href="contact.html">${isEnglish ? "Contact Us" : "联系我们"}</a>
     </div>
   `;
   downloadsLink.insertAdjacentElement("afterend", dropdown);
+
+  const languageSwitch = document.createElement("a");
+  languageSwitch.className = "language-switch";
+  languageSwitch.href = isEnglish ? `../${currentFile}` : `en/${currentFile}`;
+  languageSwitch.textContent = isEnglish ? "中文" : "EN";
+  languageSwitch.setAttribute("aria-label", isEnglish ? "切换到中文" : "Switch to English");
+  nav.append(languageSwitch);
 
   nav.querySelectorAll("a").forEach((link) => {
     if (link.getAttribute("href") === currentFile) link.setAttribute("aria-current", "page");
@@ -189,7 +219,7 @@ document.querySelectorAll("[data-card-link]").forEach((card) => {
 document.querySelectorAll(".nav-cta").forEach((cta) => {
   if (!cta.href.includes("mailto:")) {
     cta.href = "inquiry.html";
-    cta.textContent = "售前咨询";
+    cta.textContent = isEnglish ? "Sales Inquiry" : "售前咨询";
   }
 });
 
@@ -217,14 +247,14 @@ window.addEventListener("scroll", () => {
 menuButton?.addEventListener("click", () => {
   const isOpen = header?.classList.toggle("is-open") || false;
   menuButton.setAttribute("aria-expanded", String(isOpen));
-  menuButton.setAttribute("aria-label", isOpen ? "关闭菜单" : "打开菜单");
+  menuButton.setAttribute("aria-label", isOpen ? (isEnglish ? "Close menu" : "关闭菜单") : (isEnglish ? "Open menu" : "打开菜单"));
 });
 
 document.querySelectorAll(".main-nav a").forEach((link) => {
   link.addEventListener("click", () => {
     header?.classList.remove("is-open");
     menuButton?.setAttribute("aria-expanded", "false");
-    menuButton?.setAttribute("aria-label", "打开菜单");
+    menuButton?.setAttribute("aria-label", isEnglish ? "Open menu" : "打开菜单");
     document.querySelectorAll(".nav-dropdown.is-open").forEach((dropdown) => {
       dropdown.classList.remove("is-open");
       dropdown.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
@@ -244,7 +274,7 @@ document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   header?.classList.remove("is-open");
   menuButton?.setAttribute("aria-expanded", "false");
-  menuButton?.setAttribute("aria-label", "打开菜单");
+  menuButton?.setAttribute("aria-label", isEnglish ? "Open menu" : "打开菜单");
   document.querySelectorAll(".nav-dropdown.is-open").forEach((dropdown) => {
     dropdown.classList.remove("is-open");
     dropdown.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
@@ -288,7 +318,14 @@ if (!reducedMotion) {
 
 const productOptions = document.querySelectorAll("[data-product-options]");
 productOptions.forEach((select) => {
-  select.innerHTML = `<option value="">请选择</option>${(window.KEMESSER_PRODUCTS || []).map((item) => `<option value="${item.name}">${item.name}</option>`).join("")}<option value="其他">其他</option>`;
+  const englishProductNames = {
+    "thawhome-tube": "ThawHome Tube",
+    "thawhome-bag": "ThawHome Bag"
+  };
+  select.innerHTML = `<option value="">${isEnglish ? "Please select" : "请选择"}</option>${(window.KEMESSER_PRODUCTS || []).map((item) => {
+    const label = isEnglish ? (englishProductNames[item.id] || item.name) : item.name;
+    return `<option value="${label}">${label}</option>`;
+  }).join("")}<option value="${isEnglish ? "Other" : "其他"}">${isEnglish ? "Other" : "其他"}</option>`;
   const requestedProduct = new URLSearchParams(location.search).get("product");
   if (requestedProduct && Array.from(select.options).some((option) => option.value === requestedProduct)) {
     select.value = requestedProduct;
@@ -296,16 +333,32 @@ productOptions.forEach((select) => {
 });
 
 const manualTable = document.querySelector("[data-manual-table]");
+const englishSeries = { "复苏系列": "Thawing", "冻存系列": "Cryopreservation", "冷冻操作": "Cold Operation" };
+const englishTypes = {
+  "管式细胞复苏仪": "Tube Cell Thawing System",
+  "袋式细胞复苏仪": "Bag Cell Thawing System",
+  "程序降温盒": "Controlled-rate Freezing Container"
+};
 const renderManuals = () => {
   if (!manualTable || !window.KEMESSER_MANUALS) return;
   const series = document.querySelector('[data-manual-filter="series"]')?.value || "";
   const language = document.querySelector('[data-manual-filter="language"]')?.value || "";
   const query = (document.querySelector("[data-manual-search]")?.value || "").trim().toLowerCase();
   const rows = KEMESSER_MANUALS.filter((item) => {
-    const text = `${item.product} ${item.series} ${item.type} ${item.language}`.toLowerCase();
+    const translatedText = isEnglish
+      ? `${englishSeries[item.series] || ""} ${englishTypes[item.type] || ""} ${item.language === "中文" ? "Chinese" : item.language}`
+      : "";
+    const text = `${item.product} ${item.series} ${item.type} ${item.language} ${translatedText}`.toLowerCase();
     return (!series || item.series === series) && (!language || item.language === language) && (!query || text.includes(query));
   });
-  manualTable.querySelector("tbody").innerHTML = rows.map((item) => `<tr><td>${item.product}</td><td>${item.series}</td><td>${item.type}</td><td>${item.language}</td><td>${item.version}</td><td>${item.updated}</td><td>${item.size}</td><td><a class="table-link" href="${item.file}" target="_blank" rel="noreferrer">下载说明书</a></td></tr>`).join("");
+  manualTable.querySelector("tbody").innerHTML = rows.map((item) => {
+    const product = isEnglish ? item.product.replace(" 管式", " Tube").replace(" 袋式", " Bag") : item.product;
+    const seriesLabel = isEnglish ? (englishSeries[item.series] || item.series) : item.series;
+    const typeLabel = isEnglish ? (englishTypes[item.type] || item.type) : item.type;
+    const languageLabel = isEnglish && item.language === "中文" ? "Chinese" : item.language;
+    const file = isEnglish ? `../${item.file}` : item.file;
+    return `<tr><td>${product}</td><td>${seriesLabel}</td><td>${typeLabel}</td><td>${languageLabel}</td><td>${item.version}</td><td>${item.updated}</td><td>${item.size}</td><td><a class="table-link" href="${file}" target="_blank" rel="noreferrer">${isEnglish ? "Download Manual" : "下载说明书"}</a></td></tr>`;
+  }).join("");
   const empty = document.querySelector("[data-manual-empty]");
   if (empty) empty.hidden = rows.length > 0;
 };
@@ -313,13 +366,32 @@ document.querySelectorAll("[data-manual-filter], [data-manual-search]").forEach(
 renderManuals();
 
 const compareTable = document.querySelector("[data-compare-table]");
+const englishProductDetails = {
+  thawline: ["Tube Cell Thawing System", "Tube-format frozen samples", "Four-channel thawing / Access control / SD card storage / PC export"],
+  "thawline-pro": ["Advanced Tube Cell Thawing System", "Multi-user standardized laboratories", "Three-level access / Run profiles / Bluetooth printing / Process data"],
+  thawwaker: ["Bag Cell Thawing System", "Cryobags and other bag-format samples", "Capacity adaptation / Adaptive heated lid / Emergency stop / Dynamic sensing"],
+  "thawhome-tube": ["Tube Cell Thawing System", "Multiple tube formats", "Water-free thawing / Four independent channels / Alerts / Efficient operation"],
+  "thawhome-bag": ["Bag Cell Thawing System", "Bag-format frozen samples", "Water-free thawing / Telescopic heated lid / Alerts / Efficient operation"],
+  mobithaw: ["Portable Cell Thawing System", "Mobile and space-limited workflows", "Type-C charging / Water-free thawing / Data export / Ozone sterilization"],
+  cellhome: ["Controlled-rate Freezing Container", "Cell cryopreservation and controlled cooling", "No auxiliary additives / Consistent cooling rate / Multiple formats / Reusable"],
+  coolhome: ["Ice-free Workstation", "Cold sample processing", "Ice-free operation / Sample organization / Multiple temperature ranges"],
+  holderhome: ["Ice-free Freezing Container", "Low-temperature holding and transfer", "Dry cold holding / Organized samples / Reusable"],
+  blockhome: ["Tube Module", "Multiple tube and vial formats", "Modular positions / Sample organization / Batch handling"],
+  transhome: ["Dry Ice Transport Container", "Low-temperature sample transport", "Power-free transport / Insulation / Refillable dry ice"],
+  icehome: ["Ice Pan and Bucket", "Routine laboratory cooling", "Reusable / Multiple capacities / Easy handling"]
+};
 const renderCompare = () => {
   if (!compareTable || !window.KEMESSER_PRODUCTS) return;
   const query = (document.querySelector("[data-compare-search]")?.value || "").trim().toLowerCase();
-  const rows = KEMESSER_PRODUCTS.filter((item) => `${item.name} ${item.type} ${item.scenario} ${item.features}`.toLowerCase().includes(query));
+  const rows = KEMESSER_PRODUCTS.filter((item) => {
+    const translated = englishProductDetails[item.id] || [];
+    return `${item.name} ${item.type} ${item.scenario} ${item.features} ${translated.join(" ")}`.toLowerCase().includes(query);
+  });
   compareTable.querySelector("tbody").innerHTML = rows.map((item) => {
     const manual = (window.KEMESSER_MANUALS || []).find((m) => m.productId === item.id);
-    return `<tr><td><strong>${item.name}</strong><br><a class="table-link" href="${item.url}">查看详情</a></td><td>${item.type}</td><td>${item.scenario}</td><td>${item.features}</td><td>${manual ? `<a class="table-link" href="${manual.file}" target="_blank" rel="noreferrer">下载说明书</a>` : "说明书暂未上传"}</td></tr>`;
+    const manualFile = manual ? (isEnglish ? `../${manual.file}` : manual.file) : "";
+    const translated = englishProductDetails[item.id] || [item.type, item.scenario, item.features];
+    return `<tr><td><strong>${item.name}</strong><br><a class="table-link" href="${item.url}">${isEnglish ? "View Details" : "查看详情"}</a></td><td>${isEnglish ? translated[0] : item.type}</td><td>${isEnglish ? translated[1] : item.scenario}</td><td>${isEnglish ? translated[2] : item.features}</td><td>${manual ? `<a class="table-link" href="${manualFile}" target="_blank" rel="noreferrer">${isEnglish ? "Download Manual" : "下载说明书"}</a>` : (isEnglish ? "Manual not yet available" : "说明书暂未上传")}</td></tr>`;
   }).join("");
 };
 document.querySelector("[data-compare-search]")?.addEventListener("input", renderCompare);
@@ -332,7 +404,7 @@ document.querySelectorAll("[data-kemesser-form]").forEach((form) => {
     const message = form.querySelector("[data-form-message]");
     const submit = form.querySelector('button[type="submit"]');
     submit.disabled = true;
-    submit.textContent = "提交中...";
+    submit.textContent = isEnglish ? "Submitting..." : "提交中...";
     const record = {
       type: form.dataset.formType,
       createdAt: new Date().toLocaleString(),
@@ -342,12 +414,18 @@ document.querySelectorAll("[data-kemesser-form]").forEach((form) => {
     records.unshift(record);
     localStorage.setItem("kemesser-submissions", JSON.stringify(records));
     setTimeout(() => {
-      message.textContent = form.dataset.formType === "support"
-        ? "您的售后工单已提交成功。科默斯技术支持团队将根据您提供的信息进行排查，请保持电话或邮箱畅通。"
-        : "提交成功，科默斯团队将尽快与您联系。";
+      message.textContent = isEnglish
+        ? (form.dataset.formType === "support"
+          ? "Your service request has been submitted. The Kemesser technical support team will contact you after reviewing the information."
+          : "Your inquiry has been submitted. The Kemesser team will contact you shortly.")
+        : (form.dataset.formType === "support"
+          ? "您的售后工单已提交成功。科默斯技术支持团队将根据您提供的信息进行排查，请保持电话或邮箱畅通。"
+          : "提交成功，科默斯团队将尽快与您联系。");
       form.reset();
       submit.disabled = false;
-      submit.textContent = form.dataset.formType === "support" ? "提交售后工单" : "提交询盘";
+      submit.textContent = isEnglish
+        ? (form.dataset.formType === "support" ? "Submit Service Request" : "Submit Inquiry")
+        : (form.dataset.formType === "support" ? "提交售后工单" : "提交询盘");
     }, 400);
   });
 });

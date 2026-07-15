@@ -105,6 +105,32 @@ video,
 }
 .main-nav a:hover::after,
 .main-nav a[aria-current="page"]::after { right: 0; }
+.main-nav .language-switch {
+  display: inline-flex;
+  min-width: 38px;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  opacity: 0.78;
+  transition: color 0.24s ease, background 0.24s ease, border-color 0.24s ease, transform 0.3s var(--ease-out);
+}
+.main-nav .language-switch::after { display: none; }
+.main-nav .language-switch:hover {
+  color: #ffffff;
+  border-color: var(--green);
+  background: var(--green);
+  opacity: 1;
+  transform: translateY(-2px);
+}
+html[lang="en"] .main-nav {
+  gap: clamp(12px, 1.7vw, 26px);
+  font-size: 14px;
+}
 .nav-dropdown {
   position: relative;
 }
@@ -1376,6 +1402,12 @@ video,
     animation: mobileMenuIn 0.3s var(--ease-out) both;
   }
   .site-header.is-open .main-nav a { padding: 14px; }
+  .site-header.is-open .main-nav .language-switch {
+    width: max-content;
+    min-width: 64px;
+    margin: 8px 14px 4px;
+    padding: 8px 14px;
+  }
   .site-header.is-open .nav-dropdown {
     display: grid;
   }
