@@ -2,6 +2,9 @@
 const menuButton = document.querySelector("[data-menu-button]");
 const heroVideo = document.querySelector("[data-hero-video]");
 const footer = document.querySelector(".site-footer");
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+menuButton?.setAttribute("aria-expanded", "false");
 
 document.body.classList.add("page-enter");
 
@@ -84,6 +87,26 @@ if (footer) {
 
 const currentFile = location.pathname.split("/").pop() || "index.html";
 const servicePages = new Set(["inquiry.html", "support.html", "contact.html"]);
+const inquiryProductByPage = {
+  "product-thawline.html": "ThawLINE",
+  "product-thawline-pro.html": "ThawLINE Pro",
+  "product-thawwaker.html": "ThawWaker",
+  "product-thawhome.html": "ThawHome 管式",
+  "product-thawhome-bag.html": "ThawHome 袋式",
+  "product-mobithaw.html": "MobiThaw",
+  "product-cellhome.html": "CellHome",
+  "product-coolhome.html": "CoolHome",
+  "product-holderhome.html": "HolderHome",
+  "product-blockhome.html": "BlockHome",
+  "product-transhome.html": "TransHome",
+  "product-icehome.html": "IceHome"
+};
+
+if (inquiryProductByPage[currentFile]) {
+  document.querySelectorAll('.detail-copy .btn[href^="inquiry.html"]').forEach((link) => {
+    link.href = `inquiry.html?product=${encodeURIComponent(inquiryProductByPage[currentFile])}`;
+  });
+}
 
 document.querySelectorAll(".main-nav").forEach((nav) => {
   let downloadsLink = Array.from(nav.children).find(
@@ -139,6 +162,7 @@ document.querySelectorAll(".main-nav").forEach((nav) => {
 
 
 document.querySelectorAll("[data-card-link]").forEach((card) => {
+  if (card.matches("a[href]")) return;
   card.addEventListener("click", (event) => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const href = card.dataset.cardLink || card.getAttribute("href");
@@ -156,7 +180,7 @@ const syncScrollState = () => {
   const y = window.scrollY;
   header?.classList.toggle("is-scrolled", y > 18);
 
-  if (heroVideo) {
+  if (heroVideo && !reducedMotion) {
     const progress = Math.min(y / window.innerHeight, 1);
     document.documentElement.style.setProperty("--hero-scale", String(1 + progress * 0.08));
     document.documentElement.style.setProperty("--hero-brightness", String(0.66 - progress * 0.16));
@@ -164,15 +188,26 @@ const syncScrollState = () => {
 };
 
 syncScrollState();
-window.addEventListener("scroll", syncScrollState, { passive: true });
+let scrollFrame = 0;
+window.addEventListener("scroll", () => {
+  if (scrollFrame) return;
+  scrollFrame = requestAnimationFrame(() => {
+    syncScrollState();
+    scrollFrame = 0;
+  });
+}, { passive: true });
 
 menuButton?.addEventListener("click", () => {
-  header?.classList.toggle("is-open");
+  const isOpen = header?.classList.toggle("is-open") || false;
+  menuButton.setAttribute("aria-expanded", String(isOpen));
+  menuButton.setAttribute("aria-label", isOpen ? "关闭菜单" : "打开菜单");
 });
 
 document.querySelectorAll(".main-nav a").forEach((link) => {
   link.addEventListener("click", () => {
     header?.classList.remove("is-open");
+    menuButton?.setAttribute("aria-expanded", "false");
+    menuButton?.setAttribute("aria-label", "打开菜单");
     document.querySelectorAll(".nav-dropdown.is-open").forEach((dropdown) => {
       dropdown.classList.remove("is-open");
       dropdown.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
@@ -190,32 +225,57 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
+  header?.classList.remove("is-open");
+  menuButton?.setAttribute("aria-expanded", "false");
+  menuButton?.setAttribute("aria-label", "打开菜单");
   document.querySelectorAll(".nav-dropdown.is-open").forEach((dropdown) => {
     dropdown.classList.remove("is-open");
     dropdown.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
   });
 });
 
-const revealObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.16 }
-);
+if (reducedMotion) {
+  document.querySelectorAll(".reveal").forEach((node) => node.classList.add("is-visible"));
+} else {
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -6%" }
+  );
 
-document.querySelectorAll(".reveal").forEach((node, index) => {
-  node.style.transitionDelay = `${Math.min(index % 4, 3) * 70}ms`;
-  revealObserver.observe(node);
-});
+  document.querySelectorAll(".reveal").forEach((node, index) => {
+    node.style.transitionDelay = `${Math.min(index % 4, 3) * 55}ms`;
+    revealObserver.observe(node);
+  });
+}
+
+if (!reducedMotion) {
+  document.querySelectorAll(".btn, .nav-cta, .footer-button").forEach((control) => {
+    control.addEventListener("pointerdown", (event) => {
+      const rect = control.getBoundingClientRect();
+      const ripple = document.createElement("span");
+      ripple.className = "ripple";
+      ripple.style.left = `${event.clientX - rect.left}px`;
+      ripple.style.top = `${event.clientY - rect.top}px`;
+      control.append(ripple);
+      ripple.addEventListener("animationend", () => ripple.remove(), { once: true });
+    });
+  });
+}
 
 const productOptions = document.querySelectorAll("[data-product-options]");
 productOptions.forEach((select) => {
   select.innerHTML = `<option value="">请选择</option>${(window.KEMESSER_PRODUCTS || []).map((item) => `<option value="${item.name}">${item.name}</option>`).join("")}<option value="其他">其他</option>`;
+  const requestedProduct = new URLSearchParams(location.search).get("product");
+  if (requestedProduct && Array.from(select.options).some((option) => option.value === requestedProduct)) {
+    select.value = requestedProduct;
+  }
 });
 
 const manualTable = document.querySelector("[data-manual-table]");

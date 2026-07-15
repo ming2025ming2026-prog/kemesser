@@ -1,14 +1,16 @@
 const KEMESSER_PRODUCTS = [
-  { id: "thawline", name: "ThawLINE", type: "管式细胞复苏仪", scenario: "冻存管、试管、西林瓶等管式样本", features: "四通道并行复苏 / 二级权限 / SD 卡数据存储 / PC 导出", url: "product-thawline.html" },
+  { id: "thawline", name: "ThawLINE", type: "管式细胞复苏仪", scenario: "冻存管、试管、西林瓶等管式样本", features: "四通道并行复苏 / 二级权限 / SD 卡数据快存 / PC 导出", url: "product-thawline.html" },
   { id: "thawline-pro", name: "ThawLINE Pro", type: "管式细胞复苏仪", scenario: "多人、多角色、多批次标准化实验室", features: "三级权限 / 运行方案 / 蓝牙打印 / 温度曲线", url: "product-thawline-pro.html" },
-  { id: "thawwaker", name: "ThawWaker", type: "袋式细胞复苏仪", scenario: "冻存袋、细胞袋、血袋等袋式样本", features: "容量选择 / 热盖贴合 / STOP / 在线打印报告", url: "product-thawwaker.html" },
-  { id: "thawhome-tube", name: "ThawHome 管式", type: "管式细胞复苏仪", scenario: "1.5ml-2.0ml 与 4.0ml-5.0ml 管式样本", features: "A/B 型槽 / 中英文界面 / 蜂鸣提醒 / 错误代码", url: "product-thawhome.html" },
-  { id: "thawhome-bag", name: "ThawHome 袋式", type: "袋式细胞复苏仪", scenario: "50ml 冻存袋", features: "C 型槽 / 翻盖结构 / 快速复苏 / CE 认证", url: "product-thawhome-bag.html" },
-  { id: "mobithaw", name: "MobiThaw", type: "便携式细胞复苏仪", scenario: "移动场景、小型实验室、临时处理", features: "Type-C 充电 / 无水化解冻 / 数据导出 / 臭氧杀菌", url: "product-mobithaw.html" },
-  { id: "cellhome", name: "CellHome", type: "程序降温盒", scenario: "-80℃ 环境中的细胞程序降温", features: "无酒精 / 无液体介质 / 平均 -1℃/min / 可重复使用", url: "product-cellhome.html" },
-  { id: "coolhome", name: "CoolHome", type: "无冰工作站", scenario: "冷冻操作与样本处理平台", features: "减少传统冰浴操作问题 / 可与模块配合", url: "product-coolhome.html" },
+  { id: "thawwaker", name: "ThawWaker", type: "袋式细胞复苏仪", scenario: "冻存袋、细胞袋、血袋等袋式样本", features: "智能容量适配 / 热盖贴合 / 紧急停止 / 动态感知", url: "product-thawwaker.html" },
+  { id: "thawhome-tube", name: "ThawHome 管式", type: "管式细胞复苏仪", scenario: "多规格管式样本", features: "无水化复苏 / 四通道独立工作 / 实时报警 / 节能高效", url: "product-thawhome.html" },
+  { id: "thawhome-bag", name: "ThawHome 袋式", type: "袋式细胞复苏仪", scenario: "袋式冻存样本", features: "无水化复苏 / 伸缩热盖 / 实时报警 / 节能高效", url: "product-thawhome-bag.html" },
+  { id: "mobithaw", name: "MobiThaw", type: "便携式细胞复苏仪", scenario: "移动场景、小型实验室、临时处理", features: "Type-C 充电 / 无水化复苏 / 数据导出 / 臭氧杀菌", url: "product-mobithaw.html" },
+  { id: "cellhome", name: "CellHome", type: "程序降温盒", scenario: "细胞冻存程序降温与样本规范化管理", features: "无需添加辅助物 / 降温速率稳定 / 多规格型号 / 可重复使用", url: "product-cellhome.html" },
+  { id: "coolhome", name: "CoolHome", type: "无冰工作站", scenario: "冷冻操作与样本处理平台", features: "无冰操作 / 样本处理 / 多规格工作站组合", url: "product-coolhome.html" },
   { id: "holderhome", name: "HolderHome", type: "无冰冷冻箱", scenario: "样本低温暂存与操作配套", features: "低温暂存 / 无冰操作 / 台面使用", url: "product-holderhome.html" },
-  { id: "blockhome", name: "BlockHome", type: "试管模块", scenario: "多规格试管、冻存管孔位适配", features: "模块化孔位 / 样本分区 / 批量操作", url: "product-blockhome.html" }
+  { id: "blockhome", name: "BlockHome", type: "试管模块", scenario: "多规格试管与冻存管孔位适配", features: "模块化孔位 / 样本分区 / 批量操作", url: "product-blockhome.html" },
+  { id: "transhome", name: "TransHome", type: "干冰运输箱", scenario: "样本低温运输与转移", features: "低温运输 / 周转保护 / 多场景转移", url: "product-transhome.html" },
+  { id: "icehome", name: "IceHome", type: "冰盘冰桶", scenario: "实验室低温辅助操作", features: "低温辅助 / 灵活组合 / 便捷操作", url: "product-icehome.html" }
 ];
 
 const KEMESSER_MANUALS = [

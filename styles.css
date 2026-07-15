@@ -9,6 +9,8 @@
   --line: rgba(7, 26, 21, 0.12);
   --white: #ffffff;
   --shadow: 0 30px 90px rgba(3, 40, 28, 0.16);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 * { box-sizing: border-box; }
@@ -21,6 +23,10 @@ body {
 }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; }
+:focus-visible {
+  outline: 3px solid rgba(24, 212, 131, 0.72);
+  outline-offset: 4px;
+}
 button,
 a,
 input,
@@ -84,7 +90,9 @@ video,
 .main-nav a {
   position: relative;
   opacity: 0.86;
+  transition: color 0.22s ease, opacity 0.22s ease;
 }
+.main-nav a:hover { opacity: 1; }
 .main-nav a::after {
   position: absolute;
   left: 0;
@@ -197,7 +205,11 @@ video,
   padding: 0 26px;
   border: 1px solid transparent;
   font-weight: 800;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out),
+    border-color 0.22s ease,
+    background 0.22s ease;
 }
 .nav-cta,
 .btn-primary {
@@ -212,12 +224,21 @@ video,
 }
 .site-header.is-scrolled .btn-ghost { color: var(--ink); border-color: var(--line); }
 .nav-cta:hover,
-.btn:hover,
-.series-card:hover,
-.product-tile:hover,
-.value-card:hover,
-.map-card:hover {
-  transform: translateY(-4px);
+.btn:hover {
+  transform: translateY(-3px) scale(1.012);
+  box-shadow: 0 22px 48px rgba(0, 169, 79, 0.3);
+}
+.nav-cta:active,
+.btn:active,
+.footer-button:active {
+  transform: translateY(0) scale(0.975);
+  transition-duration: 0.08s;
+}
+.btn:disabled {
+  cursor: wait;
+  opacity: 0.66;
+  transform: none;
+  box-shadow: none;
 }
 .ripple {
   position: absolute;
@@ -239,6 +260,7 @@ video,
   border-radius: 50%;
   background: transparent;
   color: inherit;
+  cursor: pointer;
 }
 .menu-button span {
   display: block;
@@ -246,6 +268,13 @@ video,
   height: 2px;
   margin: 5px auto;
   background: currentColor;
+  transition: transform 0.28s var(--ease-out), opacity 0.2s ease;
+}
+.site-header.is-open .menu-button span:first-child {
+  transform: translateY(3.5px) rotate(45deg);
+}
+.site-header.is-open .menu-button span:last-child {
+  transform: translateY(-3.5px) rotate(-45deg);
 }
 
 .video-hero {
@@ -270,7 +299,7 @@ video,
   object-fit: cover;
   transform: scale(var(--hero-scale, 1));
   filter: saturate(0.92) brightness(var(--hero-brightness, 0.66));
-  transition: transform 0.08s linear, filter 0.08s linear;
+  will-change: transform;
 }
 .hero-shade {
   background:
@@ -280,6 +309,7 @@ video,
 .hero-copy {
   position: relative;
   z-index: 5;
+  min-width: 0;
   max-width: 740px;
   padding: clamp(22px, 3vw, 36px);
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -349,6 +379,7 @@ video,
 }
 .intro-copy {
   width: 100%;
+  min-width: 0;
 }
 .intro-copy h2 {
   max-width: none;
@@ -389,6 +420,7 @@ video,
 .series-card,
 .product-tile,
 .value-card {
+  position: relative;
   display: grid;
   align-content: start;
   gap: 14px;
@@ -399,12 +431,21 @@ video,
   background: var(--white);
   box-shadow: 0 18px 48px rgba(3, 40, 28, 0.08);
   overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.38s var(--ease-out),
+    box-shadow 0.38s var(--ease-out),
+    border-color 0.26s ease;
 }
 .series-card:hover,
-.product-tile:hover,
+.product-tile:hover {
+  transform: translateY(-7px);
+  border-color: rgba(0, 169, 79, 0.28);
+  box-shadow: 0 30px 72px rgba(3, 40, 28, 0.15);
+}
 .value-card:hover {
-  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+  border-color: rgba(0, 169, 79, 0.2);
+  box-shadow: 0 22px 54px rgba(3, 40, 28, 0.11);
 }
 .series-card img,
 .product-tile img {
@@ -419,6 +460,21 @@ video,
 }
 .product-tile img {
   padding: 8px;
+}
+.series-card img,
+.product-tile img {
+  transition: transform 0.48s var(--ease-out), filter 0.4s ease;
+}
+.series-card:hover img,
+.product-tile:hover img {
+  transform: scale(1.035);
+  filter: drop-shadow(0 18px 26px rgba(3, 40, 28, 0.12));
+}
+.series-card:active,
+.product-tile:active,
+.thawing-type-card:active {
+  transform: translateY(-2px) scale(0.992);
+  transition-duration: 0.08s;
 }
 .cryo-tile img {
   height: 400px;
@@ -633,7 +689,7 @@ video,
   border-radius: 26px;
   background: #ffffff;
   box-shadow: var(--shadow);
-  transition: transform 0.28s ease, box-shadow 0.28s ease;
+  transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out), border-color 0.25s ease;
 }
 .thawing-type-card::before {
   position: absolute;
@@ -650,10 +706,12 @@ video,
   object-fit: contain;
   padding: 44px;
   transform: scale(1);
-  transition: transform 0.38s ease;
+  transition: transform 0.55s var(--ease-out);
 }
 .thawing-type-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-7px);
+  border-color: rgba(0, 169, 79, 0.28);
+  box-shadow: 0 34px 88px rgba(3, 40, 28, 0.2);
 }
 .thawing-type-card:hover img {
   transform: scale(1.04);
@@ -773,12 +831,13 @@ video,
   border: 1px solid rgba(255,255,255,.13);
   border-radius: 22px;
   background: linear-gradient(145deg, rgba(255,255,255,.11), rgba(255,255,255,.04));
-  transition: transform .24s ease, border-color .24s ease, background .24s ease;
+  transition: transform .34s var(--ease-out), border-color .28s ease, background .28s ease, box-shadow .34s var(--ease-out);
 }
 .function-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
   border-color: rgba(92,240,168,.42);
   background: linear-gradient(145deg, rgba(24,212,131,.18), rgba(255,255,255,.05));
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.13);
 }
 .function-card span {
   color: #5cf0a8;
@@ -827,10 +886,11 @@ video,
     radial-gradient(circle at 50% 12%, rgba(0,169,79,.13), transparent 42%),
     #ffffff;
   box-shadow: 0 16px 40px rgba(5, 49, 38, 0.08);
-  transition: transform .24s ease, box-shadow .24s ease;
+  transition: transform .38s var(--ease-out), box-shadow .38s var(--ease-out), border-color .28s ease;
 }
 .model-card:hover {
   transform: translateY(-6px);
+  border-color: rgba(0, 169, 79, 0.28);
   box-shadow: 0 26px 60px rgba(5, 49, 38, 0.14);
 }
 .model-card img {
@@ -838,6 +898,10 @@ video,
   height: 250px;
   object-fit: contain;
   filter: drop-shadow(0 18px 30px rgba(3, 40, 28, 0.12));
+  transition: transform .45s var(--ease-out);
+}
+.model-card:hover img {
+  transform: scale(1.025);
 }
 .model-card h3 {
   margin: 12px 0 0;
@@ -882,6 +946,10 @@ video,
 .contact-info h2 {
   margin-top: 0;
   font-size: clamp(30px, 4vw, 54px);
+}
+.contact-info p,
+.footer-contact a {
+  overflow-wrap: anywhere;
 }
 .map-card {
   position: relative;
@@ -951,6 +1019,16 @@ video,
   color: var(--ink);
   background: #ffffff;
   font: inherit;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+}
+.filter-bar input:focus,
+.filter-bar select:focus,
+.kemesser-form input:focus,
+.kemesser-form textarea:focus,
+.kemesser-form select:focus {
+  border-color: rgba(0, 169, 79, 0.62);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(24, 212, 131, 0.14);
 }
 .filter-bar input,
 .filter-bar select {
@@ -989,6 +1067,12 @@ video,
 .table-link {
   color: var(--green);
   font-weight: 900;
+  text-underline-offset: 4px;
+  transition: color 0.2s ease;
+}
+.table-link:hover {
+  color: #007f3c;
+  text-decoration: underline;
 }
 .empty-state {
   margin-top: 18px;
@@ -1086,6 +1170,8 @@ video,
   gap: 10px;
 }
 .footer-button {
+  position: relative;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1096,6 +1182,12 @@ video,
   color: #ffffff;
   font-weight: 800;
   background: rgba(255,255,255,.06);
+  transition: transform .3s var(--ease-out), border-color .22s ease, background .22s ease, box-shadow .3s var(--ease-out);
+}
+.footer-button:hover {
+  transform: translateY(-3px);
+  border-color: rgba(92, 240, 168, .54);
+  background: rgba(255,255,255,.11);
 }
 .footer-button.primary {
   border-color: transparent;
@@ -1115,10 +1207,12 @@ video,
   margin: 0 0 12px;
   color: rgba(255,255,255,.72);
   line-height: 1.5;
+  transition: color .22s ease, transform .28s var(--ease-out);
 }
 .footer-col a:hover,
 .footer-contact a:hover {
   color: #5cf0a8;
+  transform: translateX(3px);
 }
 .footer-contact strong {
   display: block;
@@ -1141,18 +1235,18 @@ video,
 }
 .reveal {
   opacity: 0;
-  transform: translateY(34px);
-  transition: opacity 0.72s ease, transform 0.72s cubic-bezier(.2,.8,.2,1);
+  transform: translateY(24px);
+  transition: opacity 0.58s ease, transform 0.68s var(--ease-out);
 }
 .reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
 }
 .page-enter {
-  animation: pageEnter 0.45s ease both;
+  animation: pageEnter 0.34s var(--ease-standard) both;
 }
 @keyframes pageEnter {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -1179,7 +1273,7 @@ video,
   .footer-brand,
   .footer-contact { grid-column: 1 / -1; }
 }
-@media (max-width: 880px) {
+@media (max-width: 1080px) {
   .site-header { grid-template-columns: auto 1fr auto; }
   .brand img { width: 134px; }
   .main-nav,
@@ -1198,6 +1292,7 @@ video,
     background: rgba(255, 255, 255, 0.96);
     color: var(--ink);
     box-shadow: var(--shadow);
+    animation: mobileMenuIn 0.3s var(--ease-out) both;
   }
   .site-header.is-open .main-nav a { padding: 14px; }
   .site-header.is-open .nav-dropdown {
@@ -1228,6 +1323,10 @@ video,
   .site-header.is-open .nav-dropdown-menu a {
     padding: 12px 14px;
   }
+}
+@keyframes mobileMenuIn {
+  from { opacity: 0; transform: translateY(-10px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 @media (max-width: 680px) {
   .video-hero,
@@ -1314,8 +1413,13 @@ video,
   }
 
   .hero-copy h1 {
-    font-size: clamp(24px, 7.5vw, 34px);
+    font-size: clamp(21px, 6.4vw, 28px);
     white-space: nowrap;
+  }
+
+  .detail-copy h1 {
+    font-size: clamp(34px, 8.5vw, 42px);
+    text-wrap: balance;
   }
 
   .hero-copy p:not(.eyebrow),
@@ -1638,4 +1742,45 @@ video,
   }
   .map-address-badge strong { font-size: 17px; }
   .map-address-badge em { font-size: 13px; }
+}
+
+@media (hover: none) {
+  .nav-cta:hover,
+  .btn:hover,
+  .footer-button:hover,
+  .series-card:hover,
+  .product-tile:hover,
+  .value-card:hover,
+  .thawing-type-card:hover,
+  .function-card:hover,
+  .model-card:hover {
+    transform: none;
+  }
+
+  .series-card:hover img,
+  .product-tile:hover img,
+  .thawing-type-card:hover img,
+  .model-card:hover img {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .hero-video { will-change: auto; }
 }
