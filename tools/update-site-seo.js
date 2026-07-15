@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const version = '20260716-10';
+const version = '20260716-11';
 const pages = fs.readdirSync(path.join(root, 'en')).filter(file => file.endsWith('.html'));
 
 for (const file of pages) {
@@ -11,6 +11,10 @@ for (const file of pages) {
   html = html.replace(/styles\.css\?v=[^"']+/g, `styles.css?v=${version}`)
     .replace(/app\.js\?v=[^"']+/g, `app.js?v=${version}`)
     .replace(/site-data\.js\?v=[^"']+/g, `site-data.js?v=${version}`);
+  if (!html.includes('favicon-48.png')) {
+    const icons = `\n    <link rel="icon" type="image/png" sizes="48x48" href="assets/brand/favicon-48.png" />\n    <link rel="icon" type="image/png" sizes="192x192" href="assets/brand/favicon-192.png" />\n    <link rel="apple-touch-icon" sizes="192x192" href="assets/brand/favicon-192.png" />`;
+    html = html.replace(/(<meta name="viewport"[^>]*>)/, `$1${icons}`);
+  }
   if (!html.includes('rel="canonical"')) {
     const canonical = `https://www.kemesser.com/${file}`;
     const english = `https://www.kemesser.com/en/${file}`;
@@ -30,7 +34,7 @@ const redirects = {
 };
 
 function redirectHtml(target) {
-  return `<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0;url=${target}"><link rel="canonical" href="https://www.kemesser.com/${target}"><title>页面已更新 | 科默斯科技</title><script>location.replace(${JSON.stringify(target)});</script></head><body><p>页面已更新，正在前往<a href="${target}">新页面</a>。</p></body></html>`;
+  return `<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,follow"><meta http-equiv="refresh" content="0;url=${target}"><link rel="canonical" href="https://www.kemesser.com/${target}"><title>页面已更新 | 科默斯科技</title><script>location.replace(${JSON.stringify(target)});</script></head><body><p>页面已更新，正在前往<a href="${target}">新页面</a>。</p></body></html>`;
 }
 
 for (const [file, target] of Object.entries(redirects)) {

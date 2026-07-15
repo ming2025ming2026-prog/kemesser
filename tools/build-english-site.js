@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, '..');
 const out = path.join(root, 'en');
 fs.mkdirSync(out, { recursive: true });
 
-const version = '20260716-10';
+const version = '20260716-11';
 const nav = [
   ['index.html', 'Home'], ['about.html', 'About Us'], ['thawing.html', 'Thawing'],
   ['cryo.html', 'Cryopreservation'], ['cold-operation.html', 'Cold Operation'],
@@ -38,6 +38,9 @@ function page(file, title, description, body, options = {}) {
   <link rel="alternate" hreflang="zh-CN" href="${chinese}" />
   <link rel="alternate" hreflang="en" href="${canonical}" />
   <link rel="alternate" hreflang="x-default" href="${chinese}" />
+  <link rel="icon" type="image/png" sizes="48x48" href="../assets/brand/favicon-48.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/brand/favicon-192.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="../assets/brand/favicon-192.png" />
   <link rel="stylesheet" href="../styles.css?v=${version}" />
 </head>
 <body>
@@ -194,7 +197,7 @@ const bagItems = [
   {name:'ThawHome',kicker:'Bag Cell Thawing System',copy:'Stable water-free thawing for bag-format samples.',url:'product-thawhome-bag.html',image:'assets/transparent/thawing/bag/thawhome-bag.png'}
 ];
 
-page('thawing.html','Cell Thawing Systems','Tube-format and bag-format water-free cell thawing systems.',`${pageHero('THAWING SERIES','Cell Thawing Systems','Select a tube-format or bag-format solution for your workflow.')}<section class="section thawing-type-grid"><a class="thawing-type-card reveal" href="thawing-tube.html"><img loading="lazy" decoding="async" src="../assets/transparent/home/thawing-series.png" alt="Tube cell thawing systems" /><span>TUBE THAWING</span><h2>Tube Cell Thawing Systems</h2><p>ThawLINE, ThawLINE Pro, ThawHome and MobiThaw.</p></a><a class="thawing-type-card reveal" href="thawing-bag.html"><img loading="lazy" decoding="async" src="../assets/transparent/thawing/bag/thawwaker.png" alt="Bag cell thawing systems" /><span>BAG THAWING</span><h2>Bag Cell Thawing Systems</h2><p>ThawWaker and ThawHome.</p></a></section>`,{current:'thawing.html'});
+page('thawing.html','Cell Thawing Systems','Tube-format and bag-format water-free cell thawing systems.',`${pageHero('THAWING SERIES','Cell Thawing Systems','Select a tube-format or bag-format solution for your workflow.')}<section class="section thawing-type-grid"><a class="thawing-type-card reveal" href="thawing-tube.html"><img loading="lazy" decoding="async" src="../assets/home/thawing-series.png" alt="Tube cell thawing systems" /><span>TUBE THAWING</span><h2>Tube Cell Thawing Systems</h2><p>ThawLINE, ThawLINE Pro, ThawHome and MobiThaw.</p></a><a class="thawing-type-card reveal" href="thawing-bag.html"><img loading="lazy" decoding="async" src="../assets/transparent/thawing/bag/thawwaker.png" alt="Bag cell thawing systems" /><span>BAG THAWING</span><h2>Bag Cell Thawing Systems</h2><p>ThawWaker and ThawHome.</p></a></section>`,{current:'thawing.html'});
 page('thawing-tube.html','Tube Cell Thawing Systems','Tube-format cell thawing systems for standardized and mobile workflows.',pageHero('TUBE THAWING','Tube Cell Thawing Systems','Solutions for standard, advanced and mobile tube-format thawing.')+cards(tubeItems),{current:'thawing.html'});
 page('thawing-bag.html','Bag Cell Thawing Systems','Bag-format cell thawing systems with dynamic sensing and temperature management.',pageHero('BAG THAWING','Bag Cell Thawing Systems','Solutions for controlled thawing of bag-format frozen samples.')+cards(bagItems,'narrow-two'),{current:'thawing.html'});
 
@@ -210,7 +213,7 @@ const coldList = [
 page('cold-operation.html','Cold Operation Series','Ice-free workstations, cold holders, tube modules, dry ice transport and ice containers.',pageHero('COLD OPERATION SERIES','Cold Operation','Products for ice-free handling, sample organization, low-temperature transfer and daily laboratory cooling.')+cards(coldList,'cold-operation-list'),{current:'cold-operation.html'});
 
 const homeBody = `<section class="video-hero"><video class="hero-video" autoplay muted loop playsinline webkit-playsinline preload="auto" poster="../assets/fast/ppt/lab-hero.jpg" data-hero-video><source src="../assets/video/kemesser-thawing-intro.mp4" type="video/mp4" /></video><div class="hero-shade"></div><div class="hero-copy reveal"><p class="eyebrow">KEMESSER TECHNOLOGY</p><h1>Cell Low-temperature Workflow Solutions</h1><p>Reliable solutions for cell cryopreservation, thawing and cold operation workflows in research and life science.</p><div class="hero-actions"><a class="btn btn-primary" href="thawing.html">Explore Thawing Systems</a><a class="btn btn-ghost" href="about.html">About Kemesser</a></div></div></section><section class="section intro-split" id="series"><div class="intro-copy reveal"><h2>Three Product Series for Critical Cell Laboratory Workflows.</h2><p>From thawing and cryopreservation to cold operation, Kemesser covers the critical stages of laboratory low-temperature workflows.</p></div></section><section class="series-grid">${[
-  ['thawing.html','assets/transparent/home/thawing-series.png','01 / THAWING','Thawing','ThawLINE, ThawLINE Pro, ThawWaker, ThawHome, MobiThaw'],
+  ['thawing.html','assets/home/thawing-series.png','01 / THAWING','Thawing','ThawLINE, ThawLINE Pro, ThawWaker, ThawHome, MobiThaw'],
   ['cryo.html','assets/transparent/home/cryo-series.png','02 / CRYOPRESERVATION','Cryopreservation','CellHome controlled-rate freezing containers'],
   ['cold-operation.html','assets/transparent/home/cold-operation-series.png','03 / COLD OPERATION','Cold Operation','CoolHome, HolderHome, BlockHome, TransHome, IceHome']
 ].map(x=>`<a class="series-card reveal" href="${x[0]}"><img loading="lazy" decoding="async" src="../${x[1]}" alt="${x[3]}" /><span>${x[2]}</span><h3>${x[3]}</h3><p>${x[4]}</p></a>`).join('')}</section>`;
