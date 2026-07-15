@@ -32,9 +32,9 @@ if (footer) {
         <img src="assets/brand/kemesser-logo.png" alt="Kemesser Technology" />
         <p>专注细胞冻存、复苏与冷冻操作低温流程，为科研、生物样本库、医院与实验室用户提供稳定、规范、可追溯的产品方案。</p>
         <div class="footer-actions">
-          <a class="footer-button primary" href="inquiry.html">咨询产品</a>
+          <a class="footer-button primary" href="inquiry.html">售前咨询</a>
+          <a class="footer-button" href="support.html">售后服务</a>
           <a class="footer-button" href="downloads.html">下载中心</a>
-          <a class="footer-button" href="tel:057187156759">拨打电话</a>
         </div>
       </div>
       <div class="footer-col">
@@ -42,6 +42,10 @@ if (footer) {
         <a href="index.html">首页</a>
         <a href="about.html">关于我们</a>
         <a href="downloads.html">下载中心</a>
+      </div>
+      <div class="footer-col">
+        <h3>服务与联系</h3>
+        <a href="inquiry.html">售前咨询</a>
         <a href="support.html">售后服务</a>
         <a href="contact.html">联系我们</a>
       </div>
@@ -79,20 +83,57 @@ if (footer) {
 }
 
 const currentFile = location.pathname.split("/").pop() || "index.html";
+const servicePages = new Set(["inquiry.html", "support.html", "contact.html"]);
+
 document.querySelectorAll(".main-nav").forEach((nav) => {
-  const existing = Array.from(nav.querySelectorAll("a")).map((a) => a.getAttribute("href"));
-  [
-    ["downloads.html", "下载中心"],
-  ].forEach(([href, label]) => {
-    if (!existing.includes(href)) {
-      const link = document.createElement("a");
-      link.href = href;
-      link.textContent = label;
-      nav.insertBefore(link, nav.querySelector('a[href="contact.html"]'));
+  let downloadsLink = Array.from(nav.children).find(
+    (item) => item.matches?.('a[href="downloads.html"]')
+  );
+
+  if (!downloadsLink) {
+    downloadsLink = document.createElement("a");
+    downloadsLink.href = "downloads.html";
+    downloadsLink.textContent = "下载中心";
+    nav.append(downloadsLink);
+  }
+
+  Array.from(nav.children).forEach((item) => {
+    if (
+      item.matches?.('a[href="inquiry.html"], a[href="support.html"], a[href="contact.html"]')
+    ) {
+      item.remove();
     }
   });
+
+  const dropdown = document.createElement("div");
+  dropdown.className = "nav-dropdown";
+  dropdown.innerHTML = `
+    <button class="nav-dropdown-trigger" type="button" aria-expanded="false" aria-haspopup="true">
+      <span>服务与联系</span>
+    </button>
+    <div class="nav-dropdown-menu">
+      <a href="inquiry.html">售前咨询</a>
+      <a href="support.html">售后服务</a>
+      <a href="contact.html">联系我们</a>
+    </div>
+  `;
+  downloadsLink.insertAdjacentElement("afterend", dropdown);
+
   nav.querySelectorAll("a").forEach((link) => {
     if (link.getAttribute("href") === currentFile) link.setAttribute("aria-current", "page");
+  });
+
+  const trigger = dropdown.querySelector(".nav-dropdown-trigger");
+  if (servicePages.has(currentFile)) trigger.setAttribute("aria-current", "page");
+
+  trigger.addEventListener("click", () => {
+    const willOpen = !dropdown.classList.contains("is-open");
+    document.querySelectorAll(".nav-dropdown.is-open").forEach((item) => {
+      item.classList.remove("is-open");
+      item.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+    });
+    dropdown.classList.toggle("is-open", willOpen);
+    trigger.setAttribute("aria-expanded", String(willOpen));
   });
 });
 
@@ -105,7 +146,10 @@ document.querySelectorAll("[data-card-link]").forEach((card) => {
   });
 });
 document.querySelectorAll(".nav-cta").forEach((cta) => {
-  if (!cta.href.includes("mailto:")) cta.href = "inquiry.html";
+  if (!cta.href.includes("mailto:")) {
+    cta.href = "inquiry.html";
+    cta.textContent = "售前咨询";
+  }
 });
 
 const syncScrollState = () => {
@@ -127,7 +171,29 @@ menuButton?.addEventListener("click", () => {
 });
 
 document.querySelectorAll(".main-nav a").forEach((link) => {
-  link.addEventListener("click", () => header?.classList.remove("is-open"));
+  link.addEventListener("click", () => {
+    header?.classList.remove("is-open");
+    document.querySelectorAll(".nav-dropdown.is-open").forEach((dropdown) => {
+      dropdown.classList.remove("is-open");
+      dropdown.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+    });
+  });
+});
+
+document.addEventListener("click", (event) => {
+  document.querySelectorAll(".nav-dropdown.is-open").forEach((dropdown) => {
+    if (dropdown.contains(event.target)) return;
+    dropdown.classList.remove("is-open");
+    dropdown.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+  });
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  document.querySelectorAll(".nav-dropdown.is-open").forEach((dropdown) => {
+    dropdown.classList.remove("is-open");
+    dropdown.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+  });
 });
 
 const revealObserver = new IntersectionObserver(
