@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, '..');
 const out = path.join(root, 'en');
 fs.mkdirSync(out, { recursive: true });
 
-const version = '20260716-9';
+const version = '20260716-10';
 const nav = [
   ['index.html', 'Home'], ['about.html', 'About Us'], ['thawing.html', 'Thawing'],
   ['cryo.html', 'Cryopreservation'], ['cold-operation.html', 'Cold Operation'],

@@ -183,9 +183,9 @@ document.querySelectorAll(".main-nav").forEach((nav) => {
   downloadsLink.insertAdjacentElement("afterend", dropdown);
 
   const languageSwitch = document.createElement("a");
-  languageSwitch.className = "language-switch";
+  languageSwitch.className = "language-switch mobile-language-switch";
   languageSwitch.href = isEnglish ? `../${currentFile}` : `en/${currentFile}`;
-  languageSwitch.textContent = isEnglish ? "中文" : "EN";
+  languageSwitch.textContent = isEnglish ? "中文" : "English";
   languageSwitch.setAttribute("aria-label", isEnglish ? "切换到中文" : "Switch to English");
   nav.append(languageSwitch);
 
@@ -217,10 +217,9 @@ document.querySelectorAll("[data-card-link]").forEach((card) => {
   });
 });
 document.querySelectorAll(".nav-cta").forEach((cta) => {
-  if (!cta.href.includes("mailto:")) {
-    cta.href = "inquiry.html";
-    cta.textContent = isEnglish ? "Sales Inquiry" : "售前咨询";
-  }
+  cta.href = isEnglish ? `../${currentFile}` : `en/${currentFile}`;
+  cta.textContent = isEnglish ? "中文" : "English";
+  cta.setAttribute("aria-label", isEnglish ? "切换到中文" : "Switch to English");
 });
 
 const syncScrollState = () => {

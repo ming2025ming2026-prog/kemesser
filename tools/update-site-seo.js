@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const version = '20260716-9';
+const version = '20260716-10';
 const pages = fs.readdirSync(path.join(root, 'en')).filter(file => file.endsWith('.html'));
 
 for (const file of pages) {
