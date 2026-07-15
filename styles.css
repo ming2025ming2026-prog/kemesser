@@ -457,6 +457,7 @@ video,
 }
 .series-card img {
   padding: 8px;
+  filter: drop-shadow(0 14px 13px rgba(3, 40, 28, 0.18));
 }
 .product-tile img {
   padding: 8px;
@@ -468,7 +469,7 @@ video,
 .series-card:hover img,
 .product-tile:hover img {
   transform: scale(1.035);
-  filter: drop-shadow(0 18px 26px rgba(3, 40, 28, 0.12));
+  filter: drop-shadow(0 19px 18px rgba(3, 40, 28, 0.22));
 }
 .series-card:active,
 .product-tile:active,

@@ -9,23 +9,40 @@ menuButton?.setAttribute("aria-expanded", "false");
 document.body.classList.add("page-enter");
 
 if (heroVideo) {
+  let heroVideoLoaded = false;
+  const tryPlayHeroVideo = () => {
+    if (document.visibilityState === "hidden") return;
+    heroVideo.muted = true;
+    heroVideo.defaultMuted = true;
+    heroVideo.playsInline = true;
+    heroVideo.play().catch(() => {});
+  };
+
   const loadHeroVideo = () => {
+    if (heroVideoLoaded) {
+      tryPlayHeroVideo();
+      return;
+    }
+    heroVideoLoaded = true;
     heroVideo.querySelectorAll("source[data-src]").forEach((source) => {
       source.src = source.dataset.src;
       source.removeAttribute("data-src");
     });
     heroVideo.load();
-    heroVideo.play().catch(() => {});
+    tryPlayHeroVideo();
   };
-  const scheduleHeroVideo = () => {
-    if ("requestIdleCallback" in window) {
-      requestIdleCallback(loadHeroVideo, { timeout: 1400 });
-    } else {
-      setTimeout(loadHeroVideo, 700);
-    }
-  };
-  if (document.readyState === "complete") scheduleHeroVideo();
-  else window.addEventListener("load", scheduleHeroVideo, { once: true });
+
+  heroVideo.addEventListener("loadeddata", tryPlayHeroVideo);
+  heroVideo.addEventListener("canplay", tryPlayHeroVideo);
+  document.addEventListener("visibilitychange", tryPlayHeroVideo);
+  document.addEventListener("pointerdown", tryPlayHeroVideo, { once: true, passive: true });
+  document.addEventListener("touchstart", tryPlayHeroVideo, { once: true, passive: true });
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadHeroVideo, { once: true });
+  } else {
+    loadHeroVideo();
+  }
 }
 
 if (footer) {
