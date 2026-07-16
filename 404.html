@@ -3,19 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex" />
+    <meta name="robots" content="noindex, nofollow" />
     <title>页面未找到 | 科默斯科技</title>
-    <link rel="stylesheet" href="styles.css?v=20260715-8" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="stylesheet" href="/styles.css?v=20260716-1" />
+    <script>
+      (() => {
+        const path = window.location.pathname.toLowerCase();
+        const legacyRoutes = [
+          [/^\/bk_25523084(?:\.html)?$/, "/contact.html"],
+          [/^\/bk_25539801(?:\.html)?$/, "/about.html"],
+          [/^\/doc_25542276(?:_|\.html)/, "/downloads.html"],
+          [/^\/pro_47669848(?:\.html)?$/, "/product-thawhome.html"],
+          [/^\/pro_45642757(?:\.html)?$/, "/product-cellhome.html"],
+          [/^\/pro_25541021_7252446(?:_|\.html)/, "/product-thawline.html"],
+          [/^\/products\/25541021_7252248_7252263(?:_|\.html)/, "/product-blockhome.html"],
+          [/^\/products\/25541021_7252248_7252264(?:_|\.html)/, "/product-coolhome.html"],
+          [/^\/products\/25541021_7252248_7252265(?:_|\.html)/, "/product-holderhome.html"],
+          [/^\/(?:pro_|products\/)25541021_7252248_7252266(?:_|\.html)/, "/product-icehome.html"],
+          [/^\/products\/25541021_7252248_7252268(?:_|\.html)/, "/product-transhome.html"]
+        ];
+
+        for (const [pattern, target] of legacyRoutes) {
+          if (pattern.test(path)) {
+            window.location.replace(target);
+            return;
+          }
+        }
+      })();
+    </script>
   </head>
   <body>
     <main>
       <section class="page-hero">
         <p class="eyebrow">404</p>
-        <h1>页面已更新</h1>
-        <p>您访问的旧页面已调整，请从新版网站继续浏览。</p>
+        <h1>页面已下线</h1>
+        <p>您访问的旧页面已删除，且不会继续被搜索引擎收录。请从新版网站继续浏览。</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="index.html">进入中文站</a>
-          <a class="btn btn-ghost" href="en/index.html">Visit English Site</a>
+          <a class="btn btn-primary" href="/index.html">进入中文站</a>
+          <a class="btn btn-ghost" href="/en/index.html">Visit English Site</a>
         </div>
       </section>
     </main>
