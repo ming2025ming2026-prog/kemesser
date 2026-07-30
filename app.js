@@ -166,19 +166,28 @@ document.body.append(consultationWidget);
 
 const consultationToggle = consultationWidget.querySelector("[data-consultation-toggle]");
 const consultationPanel = consultationWidget.querySelector("[data-consultation-panel]");
+const consultationDismissedKey = "kemesser-consultation-dismissed";
 const setConsultationOpen = (open) => {
   consultationWidget.classList.toggle("is-open", open);
   consultationToggle.setAttribute("aria-expanded", String(open));
   consultationPanel.setAttribute("aria-hidden", String(!open));
 };
 consultationToggle.addEventListener("click", () => setConsultationOpen(!consultationWidget.classList.contains("is-open")));
-consultationWidget.querySelector("[data-consultation-close]").addEventListener("click", () => setConsultationOpen(false));
+const dismissConsultation = () => {
+  sessionStorage.setItem(consultationDismissedKey, "true");
+  setConsultationOpen(false);
+};
+consultationWidget.querySelector("[data-consultation-close]").addEventListener("click", dismissConsultation);
 consultationWidget.querySelector("[data-consultation-draft]").addEventListener("submit", (event) => {
   event.preventDefault();
   const draft = event.currentTarget.querySelector("textarea").value.trim();
   if (draft) sessionStorage.setItem("kemesser-consultation-draft", draft);
   window.location.href = "inquiry.html?source=online";
 });
+
+if (!sessionStorage.getItem(consultationDismissedKey)) {
+  requestAnimationFrame(() => setConsultationOpen(true));
+}
 
 const consultationDraft = sessionStorage.getItem("kemesser-consultation-draft");
 if (consultationDraft && currentFile === "inquiry.html") {
@@ -332,7 +341,7 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
-  setConsultationOpen(false);
+  dismissConsultation();
   header?.classList.remove("is-open");
   menuButton?.setAttribute("aria-expanded", "false");
   menuButton?.setAttribute("aria-label", isEnglish ? "Open menu" : "打开菜单");
