@@ -2074,3 +2074,187 @@ html[lang="en"] .belief-heading h2 {
 
   .hero-video { will-change: auto; }
 }
+
+/* Floating consultation keeps the old site's useful entry point in the new brand language. */
+.consultation-widget {
+  position: fixed;
+  right: clamp(18px, 2.4vw, 34px);
+  bottom: clamp(18px, 2.4vw, 34px);
+  z-index: 50;
+  display: grid;
+  justify-items: end;
+  gap: 14px;
+}
+.consultation-fab {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--green-2), var(--green));
+  color: var(--white);
+  box-shadow: 0 18px 42px rgba(0, 113, 61, 0.34);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  transition: transform .3s var(--ease-out), box-shadow .3s var(--ease-out), background .3s ease;
+}
+.consultation-fab:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 54px rgba(0, 113, 61, 0.4);
+}
+.consultation-fab:active { transform: scale(.97); }
+.consultation-fab-icon {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .19);
+}
+.consultation-fab-icon i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--white);
+}
+.consultation-panel {
+  width: min(360px, calc(100vw - 36px));
+  overflow: hidden;
+  border: 1px solid rgba(7, 26, 21, .1);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, .98);
+  box-shadow: 0 28px 80px rgba(3, 40, 28, .24);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(14px) scale(.97);
+  transform-origin: right bottom;
+  transition: opacity .28s ease, transform .34s var(--ease-out), visibility .28s ease;
+  visibility: hidden;
+}
+.consultation-widget.is-open .consultation-panel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+}
+.consultation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 18px 16px;
+  color: var(--white);
+  background: linear-gradient(125deg, #06281e, #0c5c3d);
+}
+.consultation-header-title,
+.consultation-message { display: flex; align-items: flex-start; gap: 10px; }
+.consultation-header-title img,
+.consultation-message img {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--mint);
+}
+.consultation-header-title strong,
+.consultation-header-title span { display: block; }
+.consultation-header-title strong { font-size: 15px; letter-spacing: .02em; }
+.consultation-header-title span { margin-top: 3px; color: rgba(255,255,255,.65); font-size: 12px; }
+.consultation-close {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.1);
+  color: var(--white);
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  transition: background .2s ease, transform .25s var(--ease-out);
+}
+.consultation-close:hover { background: rgba(255,255,255,.2); transform: rotate(90deg); }
+.consultation-body { padding: 16px; }
+.consultation-message p {
+  margin: 0;
+  padding: 12px 13px;
+  border-radius: 4px 14px 14px 14px;
+  background: #eff7f2;
+  color: #355047;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.consultation-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 14px 0;
+}
+.consultation-action {
+  display: grid;
+  min-height: 42px;
+  place-items: center;
+  padding: 7px 5px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+  transition: color .2s ease, border-color .2s ease, background .2s ease, transform .25s var(--ease-out);
+}
+.consultation-action:hover { border-color: rgba(0,169,79,.38); background: var(--mint); color: var(--green); transform: translateY(-2px); }
+.consultation-action.primary { border-color: var(--green); background: var(--green); color: var(--white); }
+.consultation-action.primary:hover { background: #008e42; color: var(--white); }
+.consultation-draft { display: grid; gap: 8px; }
+.consultation-draft label { color: var(--ink); font-size: 12px; font-weight: 800; }
+.consultation-draft textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 76px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.consultation-draft textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,169,79,.12); }
+.consultation-draft button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--ink);
+  color: var(--white);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+  transition: transform .25s var(--ease-out), background .2s ease;
+}
+.consultation-draft button:hover { background: var(--green); transform: translateY(-2px); }
+.consultation-note { margin: 12px 0 0; color: var(--muted); font-size: 12px; text-align: center; }
+@media (max-width: 520px) {
+  .consultation-widget { right: 14px; bottom: 14px; gap: 10px; }
+  .consultation-fab { min-height: 48px; padding-right: 17px; }
+  .consultation-panel { width: min(360px, calc(100vw - 28px)); border-radius: 18px; }
+  .consultation-actions { grid-template-columns: 1fr 1fr; }
+  .consultation-actions .consultation-action:last-child { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .consultation-panel,
+  .consultation-fab,
+  .consultation-action,
+  .consultation-draft button,
+  .consultation-close { transition: none; }
+}

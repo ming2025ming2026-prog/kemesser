@@ -126,6 +126,67 @@ if (footer) {
 }
 
 const currentFile = location.pathname.split("/").pop() || "index.html";
+const consultationWidget = document.createElement("aside");
+consultationWidget.className = "consultation-widget";
+consultationWidget.setAttribute("aria-label", isEnglish ? "Online consultation" : "在线咨询");
+const consultationAssetPrefix = isEnglish ? "../" : "";
+consultationWidget.innerHTML = `
+  <button class="consultation-fab" type="button" data-consultation-toggle aria-expanded="false" aria-controls="consultation-panel">
+    <span class="consultation-fab-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span>${isEnglish ? "Consultation" : "在线咨询"}</span>
+  </button>
+  <section class="consultation-panel" id="consultation-panel" data-consultation-panel aria-hidden="true" role="dialog" aria-modal="false" aria-label="${isEnglish ? "Kemesser online consultation" : "科默斯在线咨询"}">
+    <header class="consultation-header">
+      <div class="consultation-header-title">
+        <img src="${consultationAssetPrefix}assets/brand/favicon-192.png" alt="" />
+        <div><strong>${isEnglish ? "Kemesser Consultant" : "科默斯在线顾问"}</strong><span>${isEnglish ? "Online now" : "在线为您服务"}</span></div>
+      </div>
+      <button class="consultation-close" type="button" data-consultation-close aria-label="${isEnglish ? "Close consultation" : "关闭在线咨询"}">×</button>
+    </header>
+    <div class="consultation-body">
+      <div class="consultation-message">
+        <img src="${consultationAssetPrefix}assets/brand/favicon-192.png" alt="" />
+        <p>${isEnglish ? "Welcome to Kemesser. Tell us what you need, and we will guide you to the right product or service form." : "您好，欢迎咨询科默斯。请告诉我们您的需求，我们将为您匹配产品或服务支持。"}</p>
+      </div>
+      <div class="consultation-actions">
+        <a href="inquiry.html" class="consultation-action primary">${isEnglish ? "Sales Inquiry" : "售前咨询"}</a>
+        <a href="support.html" class="consultation-action">${isEnglish ? "After-sales Service" : "售后服务"}</a>
+        <a href="tel:15384056062" class="consultation-action">${isEnglish ? "Call +86 153 8405 6062" : "拨打 15384056062"}</a>
+      </div>
+      <form class="consultation-draft" data-consultation-draft>
+        <label for="consultation-draft-text">${isEnglish ? "Describe your needs" : "描述您的需求"}</label>
+        <textarea id="consultation-draft-text" rows="3" placeholder="${isEnglish ? "Product, application, quantity or any question" : "产品型号、应用场景、采购数量或其他问题"}"></textarea>
+        <button type="submit">${isEnglish ? "Continue to inquiry" : "继续填写咨询"}</button>
+      </form>
+      <p class="consultation-note">${isEnglish ? "Or email andy@kemesser.com" : "也可发送邮件至 andy@kemesser.com"}</p>
+    </div>
+  </section>
+`;
+document.body.append(consultationWidget);
+
+const consultationToggle = consultationWidget.querySelector("[data-consultation-toggle]");
+const consultationPanel = consultationWidget.querySelector("[data-consultation-panel]");
+const setConsultationOpen = (open) => {
+  consultationWidget.classList.toggle("is-open", open);
+  consultationToggle.setAttribute("aria-expanded", String(open));
+  consultationPanel.setAttribute("aria-hidden", String(!open));
+};
+consultationToggle.addEventListener("click", () => setConsultationOpen(!consultationWidget.classList.contains("is-open")));
+consultationWidget.querySelector("[data-consultation-close]").addEventListener("click", () => setConsultationOpen(false));
+consultationWidget.querySelector("[data-consultation-draft]").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const draft = event.currentTarget.querySelector("textarea").value.trim();
+  if (draft) sessionStorage.setItem("kemesser-consultation-draft", draft);
+  window.location.href = "inquiry.html?source=online";
+});
+
+const consultationDraft = sessionStorage.getItem("kemesser-consultation-draft");
+if (consultationDraft && currentFile === "inquiry.html") {
+  const messageField = document.querySelector('[data-kemesser-form] textarea');
+  if (messageField && !messageField.value) messageField.value = consultationDraft;
+  sessionStorage.removeItem("kemesser-consultation-draft");
+}
+
 const servicePages = new Set(["inquiry.html", "support.html", "contact.html"]);
 const inquiryProductByPage = {
   "product-thawline.html": "ThawLINE",
@@ -271,6 +332,7 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
+  setConsultationOpen(false);
   header?.classList.remove("is-open");
   menuButton?.setAttribute("aria-expanded", "false");
   menuButton?.setAttribute("aria-label", isEnglish ? "Open menu" : "打开菜单");
