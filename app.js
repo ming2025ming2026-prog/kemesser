@@ -406,35 +406,64 @@ document.querySelector("[data-compare-search]")?.addEventListener("input", rende
 renderCompare();
 
 document.querySelectorAll("[data-kemesser-form]").forEach((form) => {
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!form.reportValidity()) return;
     const message = form.querySelector("[data-form-message]");
     const submit = form.querySelector('button[type="submit"]');
+    const isSupport = form.dataset.formType === "support";
+    const originalLabel = isEnglish
+      ? (isSupport ? "Submit Service Request" : "Submit Inquiry")
+      : (isSupport ? "提交售后工单" : "提交询盘");
+
     submit.disabled = true;
     submit.textContent = isEnglish ? "Submitting..." : "提交中...";
-    const record = {
-      type: form.dataset.formType,
-      createdAt: new Date().toLocaleString(),
-      data: Object.fromEntries(new FormData(form).entries())
-    };
-    const records = JSON.parse(localStorage.getItem("kemesser-submissions") || "[]");
-    records.unshift(record);
-    localStorage.setItem("kemesser-submissions", JSON.stringify(records));
-    setTimeout(() => {
+    message.textContent = "";
+
+    try {
+      const formData = new FormData(form);
+      const visitorEmail = formData.get(isEnglish ? "Email" : "邮箱");
+      formData.set("_subject", isEnglish
+        ? (isSupport ? "[Kemesser Website] After-sales Service Request" : "[Kemesser Website] Sales Inquiry")
+        : (isSupport ? "【科默斯官网】售后服务工单" : "【科默斯官网】售前咨询"));
+      formData.set("_cc", "khaleesi@kemesser.com");
+      formData.set("_template", "table");
+      formData.set("提交页面", window.location.href);
+      formData.set("提交时间", new Date().toLocaleString());
+      if (visitorEmail) formData.set("_replyto", visitorEmail);
+
+      const response = await fetch("https://formsubmit.co/ajax/andy@kemesser.com", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: formData
+      });
+      if (!response.ok) throw new Error("Form submission failed");
+
+      const record = {
+        type: form.dataset.formType,
+        createdAt: new Date().toLocaleString(),
+        data: Object.fromEntries(new FormData(form).entries())
+      };
+      const records = JSON.parse(localStorage.getItem("kemesser-submissions") || "[]");
+      records.unshift(record);
+      localStorage.setItem("kemesser-submissions", JSON.stringify(records));
+
       message.textContent = isEnglish
-        ? (form.dataset.formType === "support"
+        ? (isSupport
           ? "Your service request has been submitted. The Kemesser technical support team will contact you after reviewing the information."
           : "Your inquiry has been submitted. The Kemesser team will contact you shortly.")
-        : (form.dataset.formType === "support"
+        : (isSupport
           ? "您的售后工单已提交成功。科默斯技术支持团队将根据您提供的信息进行排查，请保持电话或邮箱畅通。"
           : "提交成功，科默斯团队将尽快与您联系。");
       form.reset();
+    } catch (error) {
+      message.textContent = isEnglish
+        ? "Submission failed. Please try again later or email andy@kemesser.com directly."
+        : "提交未成功，请稍后重试或直接发送邮件至 andy@kemesser.com。";
+    } finally {
       submit.disabled = false;
-      submit.textContent = isEnglish
-        ? (form.dataset.formType === "support" ? "Submit Service Request" : "Submit Inquiry")
-        : (form.dataset.formType === "support" ? "提交售后工单" : "提交询盘");
-    }, 400);
+      submit.textContent = originalLabel;
+    }
   });
 });
 
