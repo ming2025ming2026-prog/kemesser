@@ -64,7 +64,7 @@ if (footer) {
       <div class="footer-col"><h3>Featured Products</h3><a href="product-thawline.html">ThawLINE</a><a href="product-thawline-pro.html">ThawLINE Pro</a><a href="product-thawwaker.html">ThawWaker</a><a href="product-cellhome.html">CellHome</a></div>
       <div class="footer-contact">
         <h3>Contact</h3><strong>Tel</strong><a href="tel:057187156759">+86 571 8715 6759</a><a href="tel:057187156259">+86 571 8715 6259</a>
-        <strong>Email</strong><a href="mailto:andy@kemesser.com">andy@kemesser.com</a><a href="mailto:rain@kemesser.com">rain@kemesser.com</a><a href="mailto:demi@kemesser.com">demi@kemesser.com</a>
+        <strong>Email</strong><a href="mailto:andy@kemesser.com">andy@kemesser.com</a><a href="mailto:khaleesi@kemesser.com">khaleesi@kemesser.com</a>
         <strong>Address</strong><a href="contact.html">Rooms 610 & 611, Building 1, Huixing Center, Taohuahu, Dinglan Subdistrict, Shangcheng District, Hangzhou, Zhejiang, China</a>
       </div>
     </div>
@@ -112,8 +112,7 @@ if (footer) {
         <a href="tel:057187156259">0571-87156259</a>
         <strong>邮箱</strong>
         <a href="mailto:andy@kemesser.com">andy@kemesser.com</a>
-        <a href="mailto:rain@kemesser.com">rain@kemesser.com</a>
-        <a href="mailto:demi@kemesser.com">demi@kemesser.com</a>
+        <a href="mailto:khaleesi@kemesser.com">khaleesi@kemesser.com</a>
         <strong>地址</strong>
         <a href="contact.html">浙江省杭州市上城区丁兰街道桃花湖慧星中心1号楼610室、611室</a>
       </div>
