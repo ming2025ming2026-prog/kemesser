@@ -63,7 +63,7 @@ if (footer) {
       <div class="footer-col"><h3>Product Series</h3><a href="thawing.html">Thawing</a><a href="cryo.html">Cryopreservation</a><a href="cold-operation.html">Cold Operation</a></div>
       <div class="footer-col"><h3>Featured Products</h3><a href="product-thawline.html">ThawLINE</a><a href="product-thawline-pro.html">ThawLINE Pro</a><a href="product-thawwaker.html">ThawWaker</a><a href="product-cellhome.html">CellHome</a></div>
       <div class="footer-contact">
-        <h3>Contact</h3><strong>Tel</strong><a href="tel:057187156759">+86 571 8715 6759</a><a href="tel:057187156259">+86 571 8715 6259</a>
+        <h3>Contact</h3><strong>Domestic Sales</strong><a href="tel:+8615372025538">+86 15372025538</a><strong>International Sales</strong><a href="tel:15068782616">15068782616</a><strong>Tel</strong><a href="tel:057187156759">+86 571 8715 6759</a><a href="tel:057187156259">+86 571 8715 6259</a>
         <strong>Email</strong><a href="mailto:andy@kemesser.com">andy@kemesser.com</a><a href="mailto:khaleesi@kemesser.com">khaleesi@kemesser.com</a>
         <strong>Address</strong><a href="contact.html">Rooms 610 & 611, Building 1, Huixing Center, Taohuahu, Dinglan Subdistrict, Shangcheng District, Hangzhou, Zhejiang, China</a>
       </div>
@@ -107,6 +107,10 @@ if (footer) {
       </div>
       <div class="footer-contact">
         <h3>联系方式</h3>
+        <strong>国内业务对接</strong>
+        <a href="tel:+8615372025538">+86 15372025538</a>
+        <strong>国际业务对接</strong>
+        <a href="tel:15068782616">15068782616</a>
         <strong>电话</strong>
         <a href="tel:057187156759">0571-87156759</a>
         <a href="tel:057187156259">0571-87156259</a>

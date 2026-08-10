@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, '..');
 const out = path.join(root, 'en');
 fs.mkdirSync(out, { recursive: true });
 
-const version = '20260716-11';
+const version = '20260810-1';
 const nav = [
   ['index.html', 'Home'], ['about.html', 'About Us'], ['thawing.html', 'Thawing'],
   ['cryo.html', 'Cryopreservation'], ['cold-operation.html', 'Cold Operation'],
@@ -38,9 +38,9 @@ function page(file, title, description, body, options = {}) {
   <link rel="alternate" hreflang="zh-CN" href="${chinese}" />
   <link rel="alternate" hreflang="en" href="${canonical}" />
   <link rel="alternate" hreflang="x-default" href="${chinese}" />
-  <link rel="icon" type="image/png" sizes="48x48" href="../assets/brand/favicon-48.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="../assets/brand/favicon-192.png" />
-  <link rel="apple-touch-icon" sizes="192x192" href="../assets/brand/favicon-192.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="../assets/brand/favicon-48.png?v=20260716-12" />
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/brand/favicon-192.png?v=20260716-12" />
+  <link rel="apple-touch-icon" sizes="192x192" href="../assets/brand/favicon-192.png?v=20260716-12" />
   <link rel="stylesheet" href="../styles.css?v=${version}" />
 </head>
 <body>
@@ -231,8 +231,8 @@ page('inquiry.html','Sales Inquiry','Contact Kemesser for product selection, quo
 const supportBody = `<section class="page-hero"><p class="eyebrow reveal">AFTER-SALES SERVICE</p><h1 class="reveal">After-sales Service</h1><p class="reveal">Submit the device and issue details so our technical support team can assist you.</p></section><section class="section form-section"><form class="kemesser-form reveal" data-kemesser-form data-form-type="support"><div class="form-grid"><label>Name *<input name="Name" required /></label><label>Company *<input name="Company" required /></label><label>Phone *<input name="Phone" required /></label><label>Email<input type="email" name="Email" /></label><label>Product *<select name="Product" required data-product-options></select></label><label>Serial Number<input name="Serial Number" /></label></div><label>Issue Description *<textarea name="Issue Description" required></textarea></label><label class="privacy-check"><input type="checkbox" required /> I agree that Kemesser may process my contact information to provide technical support.</label><button class="btn btn-primary" type="submit">Submit Service Request</button><p class="form-message" data-form-message></p></form></section>`;
 page('support.html','After-sales Service','Submit a Kemesser product service and technical support request.',supportBody,{current:'support.html',data:true});
 
-const mapSrc = 'https://api.map.baidu.com/place/search?query=%E6%A1%83%E8%8A%B1%E6%B9%96%E6%85%A7%E6%98%9F%E4%B8%AD%E5%BF%83&region=%E6%9D%AD%E5%B7%9E%E5%B8%82&output=html&src=kemesser.website';
-const contactBody = `<section class="page-hero"><p class="eyebrow reveal">CONTACT</p><h1 class="reveal">Contact Us</h1><p class="reveal">Contact the Kemesser sales and technical support teams.</p></section><section class="section contact-layout"><div class="contact-info reveal"><h2>Hangzhou Kemesser Technology Co., Ltd.</h2><p><strong>Domestic Sales:</strong> 15067580026</p><p><strong>Domestic &amp; International Sales:</strong> 15868179726</p><p><strong>Tel:</strong> +86 571 87156759 / 87156259</p><p><strong>Technical Support:</strong> 15384056062</p><p><strong>Fax:</strong> +86 571 87156701</p><p><strong>Email:</strong> andy@kemesser.com / khaleesi@kemesser.com</p><p><strong>Address:</strong> Rooms 610 &amp; 611, Building 1, Huixing Center, Taohuahu, Dinglan Subdistrict, Shangcheng District, Hangzhou, Zhejiang, China</p></div><div class="map-card map-embed reveal"><iframe class="map-frame" title="Kemesser office map" src="${mapSrc}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></section>`;
+const mapSrc = 'https://www.openstreetmap.org/export/embed.html?bbox=120.2105%2C30.3565%2C120.2175%2C30.3625&layer=mapnik&marker=30.3594565%2C120.2139515';
+const contactBody = `<section class="page-hero"><p class="eyebrow reveal">CONTACT</p><h1 class="reveal">Contact Us</h1><p class="reveal">Contact the Kemesser sales and technical support teams.</p></section><section class="section contact-layout"><div class="contact-info reveal"><h2>Hangzhou Kemesser Technology Co., Ltd.</h2><p><strong>Domestic Sales:</strong> +86 15372025538</p><p><strong>International Sales:</strong> 15068782616</p><p><strong>Tel:</strong> +86 571 87156759 / 87156259</p><p><strong>Technical Support: +86</strong> 15384056062</p><p><strong>Fax:</strong> +86 571 87156701</p><p><strong>Email:</strong> andy@kemesser.com / khaleesi@kemesser.com</p><p><strong>Address:</strong> Rooms 610 &amp; 611, Building 1, Huixing Center, Taohuahu, Dinglan Subdistrict, Shangcheng District, Hangzhou, Zhejiang, China</p></div><div class="map-card map-embed reveal"><iframe class="map-frame" title="Kemesser office map" src="${mapSrc}" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="map-address-badge"><span>OFFICE ADDRESS</span><strong>Taohuahu Huixing Center</strong><em>Building 1, Rooms 610 &amp; 611</em></div><a class="map-open-link" href="https://map.baidu.com/search/%E6%B5%99%E6%B1%9F%E7%9C%81%E6%9D%AD%E5%B7%9E%E5%B8%82%E4%B8%8A%E5%9F%8E%E5%8C%BA%E4%B8%81%E5%85%B0%E8%A1%97%E9%81%93%E6%A1%83%E8%8A%B1%E6%B9%96%E6%85%A7%E6%98%9F%E4%B8%AD%E5%BF%831%E5%8F%B7%E6%A5%BC" target="_blank" rel="noreferrer">Open in Baidu Maps</a></div></section>`;
 page('contact.html','Contact Us','Contact Hangzhou Kemesser Technology sales and technical support.',contactBody,{current:'contact.html'});
 
 const compareBody = `<section class="page-hero"><p class="eyebrow reveal">PRODUCT COMPARISON</p><h1 class="reveal">Compare Products</h1><p class="reveal">Review product types, applications and principal capabilities.</p></section><section class="section utility-panel"><div class="filter-bar reveal"><input type="search" data-compare-search placeholder="Search products" /></div><div class="table-card reveal"><table class="download-table" data-compare-table><thead><tr><th>Product</th><th>Type</th><th>Application</th><th>Features</th><th>Manual</th></tr></thead><tbody></tbody></table></div></section>`;
