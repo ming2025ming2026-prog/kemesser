@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, '..');
 const out = path.join(root, 'en');
 fs.mkdirSync(out, { recursive: true });
 
-const version = '20260814-1';
+const version = '20260815-1';
 const nav = [
   ['index.html', 'Home'], ['about.html', 'About Us'], ['thawing.html', 'Thawing'],
   ['cryo.html', 'Cryopreservation'], ['cold-operation.html', 'Cold Operation'],
@@ -212,7 +212,7 @@ const coldList = [
 ].map(x=>({name:x[0],kicker:x[1],copy:x[2],url:x[3],image:`assets/transparent/cold-operation/${x[4]}`}));
 page('cold-operation.html','Cold Operation Series','Ice-free workstations, cold holders, tube modules, dry ice transport and ice containers.',pageHero('COLD OPERATION SERIES','Cold Operation','Products for ice-free handling, sample organization, low-temperature transfer and daily laboratory cooling.')+cards(coldList,'cold-operation-list'),{current:'cold-operation.html'});
 
-const homeBody = `<section class="video-hero"><video class="hero-video" autoplay muted loop playsinline webkit-playsinline preload="none" data-hero-video><source data-src="../assets/video/kemesser-thawing-intro-lite.mp4" type="video/mp4" /></video><div class="hero-shade"></div><div class="hero-copy reveal"><p class="eyebrow">KEMESSER TECHNOLOGY</p><h1>Cell Low-temperature Workflow Solutions</h1><p>Reliable solutions for cell cryopreservation, thawing and cold operation workflows in research and life science.</p><div class="hero-actions"><a class="btn btn-primary" href="thawing.html">Explore Thawing Systems</a><a class="btn btn-ghost" href="about.html">About Kemesser</a></div></div></section><section class="section intro-split" id="series"><div class="intro-copy reveal"><h2>Three Product Series for Critical Cell Laboratory Workflows.</h2><p>From thawing and cryopreservation to cold operation, Kemesser covers the critical stages of laboratory low-temperature workflows.</p></div></section><section class="series-grid">${[
+const homeBody = `<section class="video-hero"><video class="hero-video" autoplay muted loop playsinline webkit-playsinline preload="none" data-hero-video><source data-src-high="../assets/video/kemesser-thawing-intro.mp4" data-src-low="../assets/video/kemesser-thawing-intro-lite.mp4" type="video/mp4" /></video><div class="hero-shade"></div><div class="hero-copy reveal"><p class="eyebrow">KEMESSER TECHNOLOGY</p><h1>Cell Low-temperature Workflow Solutions</h1><p>Reliable solutions for cell cryopreservation, thawing and cold operation workflows in research and life science.</p><div class="hero-actions"><a class="btn btn-primary" href="thawing.html">Explore Thawing Systems</a><a class="btn btn-ghost" href="about.html">About Kemesser</a></div></div></section><section class="section intro-split" id="series"><div class="intro-copy reveal"><h2>Three Product Series for Critical Cell Laboratory Workflows.</h2><p>From thawing and cryopreservation to cold operation, Kemesser covers the critical stages of laboratory low-temperature workflows.</p></div></section><section class="series-grid">${[
   ['thawing.html','assets/home/thawing-series.png','01 / THAWING','Thawing','ThawLINE, ThawLINE Pro, ThawWaker, ThawHome, MobiThaw'],
   ['cryo.html','assets/transparent/home/cryo-series.png','02 / CRYOPRESERVATION','Cryopreservation','CellHome controlled-rate freezing containers'],
   ['cold-operation.html','assets/transparent/home/cold-operation-series.png','03 / COLD OPERATION','Cold Operation','CoolHome, HolderHome, BlockHome, TransHome, IceHome']

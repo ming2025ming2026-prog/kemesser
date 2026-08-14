@@ -23,9 +23,19 @@ if (heroVideo) {
       return;
     }
     heroVideoLoaded = true;
-    heroVideo.querySelectorAll("source[data-src]").forEach((source) => {
-      source.src = source.dataset.src;
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const useLightVideo = Boolean(
+      connection?.saveData ||
+      /(^|-)2g/.test(connection?.effectiveType || "") ||
+      window.matchMedia("(max-width: 640px)").matches
+    );
+    heroVideo.querySelectorAll("source[data-src], source[data-src-high]").forEach((source) => {
+      source.src = source.dataset.srcHigh
+        ? (useLightVideo ? source.dataset.srcLow : source.dataset.srcHigh)
+        : source.dataset.src;
       source.removeAttribute("data-src");
+      source.removeAttribute("data-src-high");
+      source.removeAttribute("data-src-low");
     });
     heroVideo.load();
     tryPlayHeroVideo();
