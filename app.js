@@ -124,6 +124,7 @@ if (footer) {
         <a href="tel:057187156259">0571-87156259</a>
         <strong>邮箱</strong>
         <a href="mailto:andy@kemesser.com">andy@kemesser.com</a>
+        <a href="mailto:chens@kemesser.com">chens@kemesser.com</a>
         <strong>地址</strong>
         <a href="contact.html">浙江省杭州市上城区丁兰街道桃花湖慧星中心1号楼610室、611室</a>
       </div>
@@ -457,7 +458,7 @@ document.querySelectorAll("[data-kemesser-form]").forEach((form) => {
       formData.set("_subject", isEnglish
         ? (isSupport ? "[Kemesser Website] After-sales Service Request" : "[Kemesser Website] Sales Inquiry")
         : (isSupport ? "【科默斯官网】售后服务工单" : "【科默斯官网】售前咨询"));
-      formData.set("_cc", "khaleesi@kemesser.com");
+      formData.set("_cc", "khaleesi@kemesser.com,chens@kemesser.com");
       formData.set("_template", "table");
       formData.set("提交页面", window.location.href);
       formData.set("提交时间", new Date().toLocaleString());
