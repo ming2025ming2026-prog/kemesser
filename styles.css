@@ -447,9 +447,11 @@ html[lang="en"] .belief-heading h2 {
 }
 .hero-video {
   object-fit: cover;
-  transform: scale(var(--hero-scale, 1));
-  filter: saturate(0.92) brightness(var(--hero-brightness, 0.66));
-  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.24s ease;
+}
+.hero-video.is-ready {
+  opacity: 1;
 }
 .hero-shade {
   background:

@@ -7,8 +7,6 @@ const isEnglish = document.documentElement.lang.toLowerCase().startsWith("en");
 
 menuButton?.setAttribute("aria-expanded", "false");
 
-document.body.classList.add("page-enter");
-
 if (heroVideo) {
   let heroVideoLoaded = false;
   const tryPlayHeroVideo = () => {
@@ -33,16 +31,28 @@ if (heroVideo) {
     tryPlayHeroVideo();
   };
 
-  heroVideo.addEventListener("loadeddata", tryPlayHeroVideo);
+  const scheduleHeroVideo = () => {
+    const loadWhenIdle = () => window.setTimeout(loadHeroVideo, 80);
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(loadWhenIdle, { timeout: 350 });
+    } else {
+      loadWhenIdle();
+    }
+  };
+
+  heroVideo.addEventListener("loadeddata", () => {
+    heroVideo.classList.add("is-ready");
+    tryPlayHeroVideo();
+  });
   heroVideo.addEventListener("canplay", tryPlayHeroVideo);
   document.addEventListener("visibilitychange", tryPlayHeroVideo);
-  document.addEventListener("pointerdown", tryPlayHeroVideo, { once: true, passive: true });
-  document.addEventListener("touchstart", tryPlayHeroVideo, { once: true, passive: true });
+  document.addEventListener("pointerdown", loadHeroVideo, { once: true, passive: true });
+  document.addEventListener("touchstart", loadHeroVideo, { once: true, passive: true });
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", loadHeroVideo, { once: true });
+    document.addEventListener("DOMContentLoaded", scheduleHeroVideo, { once: true });
   } else {
-    loadHeroVideo();
+    scheduleHeroVideo();
   }
 }
 
@@ -126,13 +136,29 @@ if (footer) {
 }
 
 const currentFile = location.pathname.split("/").pop() || "index.html";
-// 53KF hosts the real-time chat experience and its operator console.
-if (!document.getElementById("kemesser-53kf-script")) {
+// Load the third-party chat only after the first screen is responsive.
+const loadCustomerService = () => {
+  if (document.getElementById("kemesser-53kf-script")) return;
   const serviceScript = document.createElement("script");
   serviceScript.id = "kemesser-53kf-script";
   serviceScript.src = "https://tb.53kf.com/code/code/a1dbfbac5296e4307c128960a4477d502/7";
   serviceScript.async = true;
   document.head.append(serviceScript);
+};
+
+const scheduleCustomerService = () => {
+  const loadWhenIdle = () => window.setTimeout(loadCustomerService, 180);
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(loadWhenIdle, { timeout: 1200 });
+  } else {
+    loadWhenIdle();
+  }
+};
+
+if (document.readyState === "complete") {
+  scheduleCustomerService();
+} else {
+  window.addEventListener("load", scheduleCustomerService, { once: true });
 }
 
 const servicePages = new Set(["inquiry.html", "support.html", "contact.html"]);
@@ -235,11 +261,6 @@ const syncScrollState = () => {
   const y = window.scrollY;
   header?.classList.toggle("is-scrolled", y > 18);
 
-  if (heroVideo && !reducedMotion) {
-    const progress = Math.min(y / window.innerHeight, 1);
-    document.documentElement.style.setProperty("--hero-scale", String(1 + progress * 0.08));
-    document.documentElement.style.setProperty("--hero-brightness", String(0.66 - progress * 0.16));
-  }
 };
 
 syncScrollState();
@@ -268,6 +289,30 @@ document.querySelectorAll(".main-nav a").forEach((link) => {
       dropdown.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
     });
   });
+});
+
+// Warm up a local page only after the visitor shows intent to open it.
+// This keeps initial loading light while making navigation feel immediate.
+const prefetchedPages = new Set();
+const prefetchPage = (href) => {
+  if (!href) return;
+  const url = new URL(href, window.location.href);
+  if (url.origin !== window.location.origin || !url.pathname.endsWith(".html")) return;
+  if (prefetchedPages.has(url.href) || url.href === window.location.href) return;
+  prefetchedPages.add(url.href);
+  const prefetch = document.createElement("link");
+  prefetch.rel = "prefetch";
+  prefetch.href = url.href;
+  prefetch.as = "document";
+  document.head.append(prefetch);
+};
+
+document.querySelectorAll('a[href$=".html"], [data-card-link]').forEach((link) => {
+  const href = link.getAttribute("href") || link.dataset.cardLink;
+  const warmPage = () => prefetchPage(href);
+  link.addEventListener("pointerenter", warmPage, { once: true, passive: true });
+  link.addEventListener("focus", warmPage, { once: true });
+  link.addEventListener("touchstart", warmPage, { once: true, passive: true });
 });
 
 document.addEventListener("click", (event) => {
@@ -307,20 +352,6 @@ if (reducedMotion) {
   document.querySelectorAll(".reveal").forEach((node, index) => {
     node.style.transitionDelay = `${Math.min(index % 4, 3) * 55}ms`;
     revealObserver.observe(node);
-  });
-}
-
-if (!reducedMotion) {
-  document.querySelectorAll(".btn, .nav-cta, .footer-button").forEach((control) => {
-    control.addEventListener("pointerdown", (event) => {
-      const rect = control.getBoundingClientRect();
-      const ripple = document.createElement("span");
-      ripple.className = "ripple";
-      ripple.style.left = `${event.clientX - rect.left}px`;
-      ripple.style.top = `${event.clientY - rect.top}px`;
-      control.append(ripple);
-      ripple.addEventListener("animationend", () => ripple.remove(), { once: true });
-    });
   });
 }
 
