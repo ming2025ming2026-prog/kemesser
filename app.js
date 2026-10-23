@@ -9,8 +9,13 @@ menuButton?.setAttribute("aria-expanded", "false");
 
 if (heroVideo) {
   let heroVideoLoaded = false;
+  let heroInView = true;
+  const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
   const tryPlayHeroVideo = () => {
-    if (document.visibilityState === "hidden") return;
+    if (document.visibilityState === "hidden" || !heroInView || motionPreference.matches) {
+      heroVideo.pause();
+      return;
+    }
     heroVideo.muted = true;
     heroVideo.defaultMuted = true;
     heroVideo.playsInline = true;
@@ -26,8 +31,7 @@ if (heroVideo) {
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     const useLightVideo = Boolean(
       connection?.saveData ||
-      /(^|-)2g/.test(connection?.effectiveType || "") ||
-      window.matchMedia("(max-width: 640px)").matches
+      /(^|-)2g/.test(connection?.effectiveType || "")
     );
     heroVideo.querySelectorAll("source[data-src], source[data-src-high]").forEach((source) => {
       source.src = source.dataset.srcHigh
@@ -56,6 +60,14 @@ if (heroVideo) {
   });
   heroVideo.addEventListener("canplay", tryPlayHeroVideo);
   document.addEventListener("visibilitychange", tryPlayHeroVideo);
+  motionPreference.addEventListener("change", tryPlayHeroVideo);
+  window.addEventListener("pageshow", tryPlayHeroVideo);
+  window.addEventListener("pagehide", () => heroVideo.pause());
+  const videoObserver = new IntersectionObserver(([entry]) => {
+    heroInView = entry.isIntersecting;
+    if (heroVideoLoaded) tryPlayHeroVideo();
+  });
+  videoObserver.observe(heroVideo);
   document.addEventListener("pointerdown", loadHeroVideo, { once: true, passive: true });
   document.addEventListener("touchstart", loadHeroVideo, { once: true, passive: true });
 
@@ -70,7 +82,7 @@ if (footer) {
   footer.innerHTML = isEnglish ? `
     <div class="footer-inner">
       <div class="footer-brand">
-        <img src="../assets/brand/kemesser-logo.png" alt="Kemesser Technology" />
+        <img width="688" height="402" src="../assets/brand/kemesser-logo-web.png" alt="Kemesser Technology" />
         <p>Reliable, standardized and traceable low-temperature solutions for cell cryopreservation, thawing and cold operations in research, biobanking, hospitals and laboratories.</p>
         <div class="footer-actions">
           <a class="footer-button primary" href="inquiry.html">Sales Inquiry</a>
@@ -92,7 +104,7 @@ if (footer) {
   ` : `
     <div class="footer-inner">
       <div class="footer-brand">
-        <img src="assets/brand/kemesser-logo.png" alt="Kemesser Technology" />
+        <img width="688" height="402" src="assets/brand/kemesser-logo-web.png" alt="Kemesser Technology" />
         <p>专注细胞冻存、复苏与冷冻操作低温流程，为科研、生物样本库、医院与实验室用户提供稳定、规范、可追溯的产品方案。</p>
         <div class="footer-actions">
           <a class="footer-button primary" href="inquiry.html">售前咨询</a>
@@ -307,6 +319,8 @@ document.querySelectorAll(".main-nav a").forEach((link) => {
 const prefetchedPages = new Set();
 const prefetchPage = (href) => {
   if (!href) return;
+  const connection = navigator.connection;
+  if (connection?.saveData || /(^|-)2g/.test(connection?.effectiveType || "")) return;
   const url = new URL(href, window.location.href);
   if (url.origin !== window.location.origin || !url.pathname.endsWith(".html")) return;
   if (prefetchedPages.has(url.href) || url.href === window.location.href) return;
@@ -361,7 +375,7 @@ if (reducedMotion) {
   );
 
   document.querySelectorAll(".reveal").forEach((node, index) => {
-    node.style.transitionDelay = `${Math.min(index % 4, 3) * 55}ms`;
+    node.style.transitionDelay = `${Math.min(index % 3, 2) * 35}ms`;
     revealObserver.observe(node);
   });
 }
@@ -418,17 +432,17 @@ renderManuals();
 const compareTable = document.querySelector("[data-compare-table]");
 const englishProductDetails = {
   thawline: ["Tube Cell Thawing System", "Tube-format frozen samples", "Four-channel thawing / Access control / SD card storage / PC export"],
-  "thawline-pro": ["Advanced Tube Cell Thawing System", "Multi-user standardized laboratories", "Three-level access / Run profiles / Bluetooth printing / Process data"],
-  thawwaker: ["Bag Cell Thawing System", "Cryobags and other bag-format samples", "Capacity adaptation / Adaptive heated lid / Emergency stop / Dynamic sensing"],
+  "thawline-pro": ["Tube Cell Thawing System", "Standardized laboratories with multiple users, roles and sample batches", "Three-level access / Run profiles / Bluetooth printing / Temperature curves"],
+  thawwaker: ["Bag Cell Thawing System", "Cryobags, cell bags, blood bags and other bag-format samples", "Capacity-based settings / Adaptive heated lid / Emergency stop / Dynamic sensing"],
   "thawhome-tube": ["Tube Cell Thawing System", "Multiple tube formats", "Water-free thawing / Four independent channels / Alerts / Efficient operation"],
   "thawhome-bag": ["Bag Cell Thawing System", "Bag-format frozen samples", "Water-free thawing / Telescopic heated lid / Alerts / Efficient operation"],
-  mobithaw: ["Portable Cell Thawing System", "Mobile and space-limited workflows", "Type-C charging / Water-free thawing / Data export / Ozone sterilization"],
-  cellhome: ["Controlled-rate Freezing Container", "Cell cryopreservation and controlled cooling", "No auxiliary additives / Consistent cooling rate / Multiple formats / Reusable"],
-  coolhome: ["Ice-free Workstation", "Cold sample processing", "Ice-free operation / Sample organization / Multiple temperature ranges"],
-  holderhome: ["Ice-free Freezing Container", "Low-temperature holding and transfer", "Dry cold holding / Organized samples / Reusable"],
+  mobithaw: ["Portable Cell Thawing System", "Mobile workflows, small laboratories and temporary processing", "Type-C charging / Water-free thawing / Data export / Ozone disinfection"],
+  cellhome: ["Controlled-rate Freezing Container", "Controlled cooling and standardized sample management for cell cryopreservation", "No auxiliary cooling liquid / Consistent cooling rate / Multiple formats / Reusable"],
+  coolhome: ["Ice-free Workstation", "Low-temperature handling and sample processing", "Ice-free operation / Sample processing / Multiple workstation configurations"],
+  holderhome: ["Ice-free Freezing Container", "Short-term cold storage and sample handling", "Short-term cold storage / Ice-free operation / Benchtop use"],
   blockhome: ["Tube Module", "Multiple tube and vial formats", "Modular positions / Sample organization / Batch handling"],
-  transhome: ["Dry Ice Transport Container", "Low-temperature sample transport", "Power-free transport / Insulation / Refillable dry ice"],
-  icehome: ["Ice Pan and Bucket", "Routine laboratory cooling", "Reusable / Multiple capacities / Easy handling"]
+  transhome: ["Dry Ice Transport Container", "Low-temperature sample transport and transfer", "Cold transport / Protection during handling / Flexible transfer applications"],
+  icehome: ["Ice Pan and Bucket", "Laboratory low-temperature handling", "Cooling support / Flexible combinations / Easy handling"]
 };
 const renderCompare = () => {
   if (!compareTable || !window.KEMESSER_PRODUCTS) return;
@@ -441,7 +455,8 @@ const renderCompare = () => {
     const manual = (window.KEMESSER_MANUALS || []).find((m) => m.productId === item.id);
     const manualFile = manual ? (isEnglish ? `../${manual.file}` : manual.file) : "";
     const translated = englishProductDetails[item.id] || [item.type, item.scenario, item.features];
-    return `<tr><td><strong>${item.name}</strong><br><a class="table-link" href="${item.url}">${isEnglish ? "View Details" : "查看详情"}</a></td><td>${isEnglish ? translated[0] : item.type}</td><td>${isEnglish ? translated[1] : item.scenario}</td><td>${isEnglish ? translated[2] : item.features}</td><td>${manual ? `<a class="table-link" href="${manualFile}" target="_blank" rel="noreferrer">${isEnglish ? "Download Manual" : "下载说明书"}</a>` : (isEnglish ? "Manual not yet available" : "说明书暂未上传")}</td></tr>`;
+    const productName = isEnglish ? item.name.replace(" 管式", " Tube").replace(" 袋式", " Bag") : item.name;
+    return `<tr><td><strong>${productName}</strong><br><a class="table-link" href="${item.url}">${isEnglish ? "View Details" : "查看详情"}</a></td><td>${isEnglish ? translated[0] : item.type}</td><td>${isEnglish ? translated[1] : item.scenario}</td><td>${isEnglish ? translated[2] : item.features}</td><td>${manual ? `<a class="table-link" href="${manualFile}" target="_blank" rel="noreferrer">${isEnglish ? "Download Manual" : "下载说明书"}</a>` : (isEnglish ? "Contact us for documentation" : "请联系科默斯获取资料")}</td></tr>`;
   }).join("");
 };
 document.querySelector("[data-compare-search]")?.addEventListener("input", renderCompare);
@@ -450,6 +465,7 @@ renderCompare();
 document.querySelectorAll("[data-kemesser-form]").forEach((form) => {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (form.dataset.submitting === "true") return;
     if (!form.reportValidity()) return;
     const message = form.querySelector("[data-form-message]");
     const submit = form.querySelector('button[type="submit"]');
@@ -459,8 +475,13 @@ document.querySelectorAll("[data-kemesser-form]").forEach((form) => {
       : (isSupport ? "提交售后工单" : "提交询盘");
 
     submit.disabled = true;
+    form.dataset.submitting = "true";
+    message.setAttribute("role", "status");
+    message.setAttribute("aria-live", "polite");
     submit.textContent = isEnglish ? "Submitting..." : "提交中...";
     message.textContent = "";
+    const requestController = new AbortController();
+    const requestTimeout = window.setTimeout(() => requestController.abort(), 30000);
 
     try {
       const formData = new FormData(form);
@@ -477,18 +498,25 @@ document.querySelectorAll("[data-kemesser-form]").forEach((form) => {
       const response = await fetch("https://formsubmit.co/ajax/andy@kemesser.com", {
         method: "POST",
         headers: { Accept: "application/json" },
-        body: formData
+        body: formData,
+        signal: requestController.signal
       });
       if (!response.ok) throw new Error("Form submission failed");
+      const result = await response.json();
+      if (result.success !== true && result.success !== "true") throw new Error("Form submission rejected");
 
       const record = {
         type: form.dataset.formType,
         createdAt: new Date().toLocaleString(),
         data: Object.fromEntries(new FormData(form).entries())
       };
-      const records = JSON.parse(localStorage.getItem("kemesser-submissions") || "[]");
-      records.unshift(record);
-      localStorage.setItem("kemesser-submissions", JSON.stringify(records));
+      // Browser storage is optional; a storage failure must not report a sent message as failed.
+      try {
+        const stored = JSON.parse(localStorage.getItem("kemesser-submissions") || "[]");
+        const records = Array.isArray(stored) ? stored : [];
+        records.unshift(record);
+        localStorage.setItem("kemesser-submissions", JSON.stringify(records.slice(0, 50)));
+      } catch (_) { /* Private browsing or storage quotas may prevent local history. */ }
 
       message.textContent = isEnglish
         ? (isSupport
@@ -500,10 +528,12 @@ document.querySelectorAll("[data-kemesser-form]").forEach((form) => {
       form.reset();
     } catch (error) {
       message.textContent = isEnglish
-        ? "Submission failed. Please try again later or email andy@kemesser.com directly."
+        ? "Submission failed. Please try again later or email khaleesi@kemesser.com directly."
         : "提交未成功，请稍后重试或直接发送邮件至 andy@kemesser.com。";
     } finally {
+      window.clearTimeout(requestTimeout);
       submit.disabled = false;
+      delete form.dataset.submitting;
       submit.textContent = originalLabel;
     }
   });
@@ -512,10 +542,28 @@ document.querySelectorAll("[data-kemesser-form]").forEach((form) => {
 const recordsList = document.querySelector("[data-records-list]");
 const renderRecords = () => {
   if (!recordsList) return;
-  const records = JSON.parse(localStorage.getItem("kemesser-submissions") || "[]");
-  recordsList.innerHTML = records.length
-    ? records.map((record) => `<article class="record-card"><h2>${record.type === "support" ? "售后工单" : "售前询盘"} · ${record.createdAt}</h2><pre>${JSON.stringify(record.data, null, 2)}</pre></article>`).join("")
-    : `<div class="empty-state">暂无提交记录。</div>`;
+  let records = [];
+  try {
+    const stored = JSON.parse(localStorage.getItem("kemesser-submissions") || "[]");
+    if (Array.isArray(stored)) records = stored;
+  } catch (_) { /* Local history may be unavailable. */ }
+  recordsList.replaceChildren();
+  records.forEach((record) => {
+    const article = document.createElement("article");
+    article.className = "record-card";
+    const heading = document.createElement("h2");
+    heading.textContent = `${record.type === "support" ? "售后工单" : "售前询盘"} · ${record.createdAt}`;
+    const details = document.createElement("pre");
+    details.textContent = JSON.stringify(record.data, null, 2);
+    article.append(heading, details);
+    recordsList.append(article);
+  });
+  if (!records.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.textContent = "暂无提交记录。";
+    recordsList.append(empty);
+  }
 };
 document.querySelector("[data-export-records]")?.addEventListener("click", () => {
   const blob = new Blob([localStorage.getItem("kemesser-submissions") || "[]"], { type: "application/json;charset=utf-8" });

@@ -1,6 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 
+// Historical bootstrap only: the bilingual HTML has since been reviewed by hand.
+if (!process.argv.includes('--legacy-rebuild')) {
+  throw new Error('Historical generator: edit the current en/*.html pages instead. --legacy-rebuild overwrites reviewed content and must not be used for production releases.');
+}
+
 const root = path.resolve(__dirname, '..');
 const out = path.join(root, 'en');
 fs.mkdirSync(out, { recursive: true });

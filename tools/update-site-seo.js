@@ -1,6 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 
+// This historical generator predates the current redirects and canonical URLs.
+if (!process.argv.includes('--legacy-rebuild')) {
+  throw new Error('Historical SEO bootstrap: do not regenerate the production sitemap or redirects with this script. --legacy-rebuild is for historical reconstruction only.');
+}
+
 const root = path.resolve(__dirname, '..');
 const version = '20260716-11';
 const pages = fs.readdirSync(path.join(root, 'en')).filter(file => file.endsWith('.html'));
