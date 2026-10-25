@@ -12,17 +12,19 @@
   <link rel="icon" type="image/png" sizes="48x48" href="../assets/brand/favicon-48.png?v=20260716-12" />
   <link rel="icon" type="image/png" sizes="192x192" href="../assets/brand/favicon-192.png?v=20260716-12" />
   <link rel="apple-touch-icon" sizes="192x192" href="../assets/brand/favicon-192.png?v=20260716-12" />
-  <link rel="stylesheet" href="../styles.css?v=20261023-1" />
+  <link rel="stylesheet" href="../styles.css?v=20261023-2" />
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
 <header class="site-header light" data-header>
     <a class="brand" href="index.html"><img width="688" height="402" decoding="async" src="../assets/brand/kemesser-logo-web.png" alt="Kemesser Technology" /></a>
-    <nav class="main-nav"><a href="index.html">Home</a><a href="about.html">About Us</a><a href="thawing.html">Thawing</a><a href="cryo.html">Cryopreservation</a><a href="cold-operation.html">Cold Operation</a><a href="downloads.html" aria-current="page">Downloads</a><a href="contact.html">Contact Us</a></nav>
-    <a class="nav-cta" href="inquiry.html">Sales Inquiry</a>
-    <button class="menu-button" type="button" data-menu-button aria-label="Open menu"><span></span><span></span></button>
+    <nav class="main-nav" id="site-navigation" aria-label="Main navigation"><a href="index.html">Home</a><a href="about.html">About Us</a><a href="thawing.html">Thawing</a><a href="cryo.html">Cryopreservation</a><a href="cold-operation.html">Cold Operation</a><a href="downloads.html" aria-current="page">Downloads</a><a href="contact.html">Contact Us</a></nav>
+    <a class="nav-cta" href="../downloads.html" lang="zh-CN" aria-label="切换到中文">中文</a>
+    <button class="menu-button" type="button" data-menu-button aria-controls="site-navigation" aria-expanded="false" aria-label="Open menu"><span></span><span></span></button>
   </header>
-<main><section class="page-hero"><p class="eyebrow reveal">DOWNLOADS</p><h1 class="reveal">Download Center</h1></section><section class="section utility-panel"><div class="filter-bar reveal"><select data-manual-filter="series"><option value="">All Series</option><option value="复苏系列">Thawing</option><option value="冻存系列">Cryopreservation</option></select><select data-manual-filter="language"><option value="">All Languages</option><option value="中文">Chinese</option><option value="English">English</option></select><input type="search" data-manual-search placeholder="Search by product or type" /></div><div class="table-card reveal"><table class="download-table" data-manual-table><thead><tr><th>Product</th><th>Series</th><th>Product Type</th><th>Language</th><th>Version</th><th>Updated</th><th>Size</th><th>Download</th></tr></thead><tbody></tbody></table></div><div class="empty-state" data-manual-empty hidden>No matching manual was found. Please try another keyword or contact Kemesser.</div></section></main>
+<main id="main-content" tabindex="-1"><section class="page-hero"><p class="eyebrow reveal">DOWNLOADS</p><h1 class="reveal">Download Center</h1></section><section class="section utility-panel"><div class="filter-bar reveal"><label class="filter-field">Product series<select data-manual-filter="series" name="series" aria-label="Filter by product series"><option value="">All Series</option><option value="复苏系列">Thawing</option><option value="冻存系列">Cryopreservation</option></select></label><label class="filter-field">Manual language<select data-manual-filter="language" name="language" aria-label="Filter by manual language"><option value="">All Languages</option><option value="中文">Chinese</option><option value="English">English</option></select></label><label class="filter-field">Search manuals<input type="search" data-manual-search name="manual-search" aria-label="Search manuals by product or type" autocomplete="off" placeholder="Search by product or type" /></label></div><div class="table-card reveal"><table class="download-table" data-manual-table aria-label="Product manuals"><thead><tr><th scope="col">Product</th><th scope="col">Series</th><th scope="col">Product Type</th><th scope="col">Language</th><th scope="col">Version</th><th scope="col">Updated</th><th scope="col">Size</th><th scope="col">Download</th></tr></thead><tbody></tbody></table></div><div class="empty-state" data-manual-empty role="status" aria-live="polite" hidden>No matching manual was found. Please try another keyword or contact Kemesser.</div></section></main>
 <footer class="site-footer"></footer>
-<script src="../site-data.js?v=20261023-1"></script><script src="../app.js?v=20261023-1"></script>
+<script src="../site-data.js?v=20261023-2"></script><script src="../app.js?v=20261023-2"></script>
+<script defer src="../utility-pages.js?v=20261023-2"></script>
 </body>
 </html>

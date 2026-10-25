@@ -37,11 +37,17 @@ async function main() {
     await context.route('**/*', (route) => new URL(route.request().url()).origin === origin ? route.continue() : route.abort());
     const page = await context.newPage();
     page.on('pageerror', (error) => report.errors.push({ url: page.url(), message: error.message }));
-    for (const width of [1440, 768, 390, 320]) {
+    for (const width of [1440, 768, 390, 320, 1024, 1280, 1920]) {
       await page.setViewportSize({ width, height: 900 });
       for (const file of pages) {
-        if ([768, 320].includes(width) && !['index.html', 'en/index.html', 'thawing.html', 'en/thawing.html', 'about.html', 'en/about.html', 'product-cellhome.html', 'en/product-cellhome.html', 'contact.html', 'en/contact.html'].includes(file)) continue;
+        if (![1440, 390].includes(width) && !['index.html', 'en/index.html', 'thawing.html', 'en/thawing.html', 'about.html', 'en/about.html', 'product-cellhome.html', 'en/product-cellhome.html', 'contact.html', 'en/contact.html'].includes(file)) continue;
         await page.goto(`${origin}/${file}`, { waitUntil: 'domcontentloaded' });
+        const firstHeadingVisible = await page.locator('main h1').evaluate((el) => {
+          if (el.getBoundingClientRect().top > innerHeight) return true;
+          const reveal = el.closest('.reveal');
+          return !reveal || Number(getComputedStyle(reveal).opacity) > 0;
+        });
+        if (!firstHeadingVisible) throw new Error(`First heading hidden during entry: ${file}/${width}`);
         await page.evaluate(async () => {
           document.querySelectorAll('img[loading="lazy"]').forEach((img) => { img.loading = 'eager'; });
           document.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-visible'));
@@ -125,7 +131,7 @@ async function main() {
         if (await page.locator('[data-product-options]').inputValue() !== 'ThawLINE') throw new Error('Product selection not carried over');
         await page.evaluate(() => {
           for (const input of document.querySelectorAll('form input')) {
-            if (input.type === 'file') continue;
+            if (input.type === 'file' || input.type === 'hidden' || input.name === '_honey' || input.closest('[hidden]')) continue;
             else if (input.type === 'checkbox') input.checked = true;
             else if (input.type === 'email') input.value = 'test@example.com';
             else if (input.type === 'date') input.value = '2026-10-23';
@@ -160,6 +166,77 @@ async function main() {
       if (lang && /[\u4e00-\u9fff]/.test(await page.locator('tbody').innerText())) throw new Error('Chinese in English comparison');
       report.interactions.push({ test: `${lang}download filters and product comparison`, passed: true });
     }
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(`${origin}/inquiry.html`);
+    const products = await page.evaluate(() => window.KEMESSER_PRODUCTS);
+    for (const lang of ['', 'en/']) {
+      for (const product of products) {
+        await page.goto(`${origin}/${lang}${product.url}`);
+        const request = page.locator('main a.btn[href^="inquiry.html"]').first();
+        const expected = lang ? product.name.replace(' 管式', ' Tube').replace(' 袋式', ' Bag') : product.name;
+        if (new URL(await request.getAttribute('href'), origin).searchParams.get('product') !== expected) throw new Error(`Product CTA lost context: ${lang}${product.url}`);
+        await request.click();
+        await page.waitForURL('**/inquiry.html?*');
+        if (await page.locator('[data-product-options]').inputValue() !== expected) throw new Error(`Product request not selected: ${product.id}`);
+        await page.locator('.nav-cta').click();
+        await page.waitForURL(lang ? '**/inquiry.html?*' : '**/en/inquiry.html?*');
+        if (await page.locator('html').getAttribute('lang') !== (lang ? 'zh-CN' : 'en')) throw new Error('Language switch stayed on the same language');
+        const translated = lang ? product.name : product.name.replace(' 管式', ' Tube').replace(' 袋式', ' Bag');
+        if (await page.locator('[data-product-options]').inputValue() !== translated) throw new Error(`Language switch lost product: ${product.id}`);
+      }
+      report.interactions.push({ test: `${lang}all 12 product CTA clicks and bilingual product selection`, passed: true });
+      await page.goto(`${origin}/${lang}compare.html`);
+      if (!(await page.locator('tbody tr').first().locator('td').last().locator('a').getAttribute('href')).endsWith(lang ? '-en.pdf' : '-zh.pdf')) throw new Error('Wrong manual language in comparison');
+      await page.locator('[data-compare-search]').fill('no-such-product');
+      if (!await page.locator('.empty-state').isVisible()) throw new Error('Missing comparison empty-state');
+      await page.reload();
+      if (await page.locator('[data-compare-search]').inputValue() !== 'no-such-product') throw new Error('Filter lost after reload');
+      await page.locator('.nav-cta').click();
+      await page.waitForLoadState('domcontentloaded');
+      if (await page.locator('[data-compare-search]').inputValue() !== 'no-such-product') throw new Error('Filter lost after language switch');
+      report.interactions.push({ test: `${lang}manual language, empty state, reload/language filter preservation`, passed: true });
+    }
+    await page.goto(`${origin}/en/index.html`);
+    const trigger = page.locator('.nav-dropdown-trigger');
+    await trigger.focus();
+    await page.keyboard.press('ArrowDown');
+    if (await trigger.getAttribute('aria-expanded') !== 'true') throw new Error('Keyboard did not open disclosure');
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(250);
+    if (await trigger.getAttribute('aria-expanded') !== 'false' || await page.locator('.nav-dropdown-menu').isVisible()) throw new Error('Escape did not dismiss disclosure');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('[data-menu-button]').click();
+    await page.mouse.click(4, 840);
+    if (await page.locator('[data-menu-button]').getAttribute('aria-expanded') !== 'false') throw new Error('Outside click did not close mobile navigation');
+    await page.waitForFunction(() => document.querySelector('video').currentTime > 0.2);
+    await page.locator('.hero-video-toggle').click();
+    if (!await page.locator('video').evaluate((el) => el.paused)) throw new Error('Pause control did not pause');
+    await page.evaluate(() => scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }));
+    await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+    await page.waitForTimeout(200);
+    if (!await page.locator('video').evaluate((el) => el.paused)) throw new Error('Manual pause was overridden');
+    await page.locator('.hero-video-toggle').click();
+    await page.waitForFunction(() => !document.querySelector('video').paused);
+    report.interactions.push({ test: 'Keyboard disclosure, mobile outside click, video manual pause/resume', passed: true });
+    await page.goto(`${origin}/en/compare.html`);
+    await page.locator('.table-card').focus();
+    for (let i = 0; i < 8; i++) await page.keyboard.press('ArrowRight');
+    await page.waitForTimeout(250);
+    const sticky = await page.locator('.table-card').evaluate((el) => ({ scroll: el.scrollLeft, first: el.querySelector('td').getBoundingClientRect().left, region: el.getBoundingClientRect().left }));
+    if (sticky.scroll === 0 || Math.abs(sticky.first - sticky.region) > 3) throw new Error('Sticky product column or keyboard table scroll failed');
+    await page.goto(`${origin}/en/contact.html`);
+    const mapFits = await page.locator('.map-card').evaluate((el) => Math.abs(el.getBoundingClientRect().height - el.querySelector('iframe').getBoundingClientRect().height) < 2);
+    if (!mapFits) throw new Error('Map does not fill its container');
+    report.interactions.push({ test: 'Sticky product column and full-size contact map', passed: true });
+    const noScript = await browser.newContext({ javaScriptEnabled: false });
+    await noScript.route('**/*', (route) => new URL(route.request().url()).origin === origin ? route.continue() : route.abort());
+    const noScriptPage = await noScript.newPage();
+    for (const file of ['index.html', 'en/product-thawline.html']) {
+      await noScriptPage.goto(`${origin}/${file}`);
+      if (!await noScriptPage.locator('h1').evaluate((el) => Number(getComputedStyle(el.closest('.reveal') || el).opacity) === 1)) throw new Error('Content hidden without JavaScript');
+    }
+    await noScript.close();
+    report.interactions.push({ test: 'Readable primary content without JavaScript', passed: true });
   } finally {
     await browser.close();
     server.close();

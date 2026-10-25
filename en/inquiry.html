@@ -12,17 +12,20 @@
   <link rel="icon" type="image/png" sizes="48x48" href="../assets/brand/favicon-48.png?v=20260716-12" />
   <link rel="icon" type="image/png" sizes="192x192" href="../assets/brand/favicon-192.png?v=20260716-12" />
   <link rel="apple-touch-icon" sizes="192x192" href="../assets/brand/favicon-192.png?v=20260716-12" />
-  <link rel="stylesheet" href="../styles.css?v=20261023-1" />
+  <link rel="stylesheet" href="../styles.css?v=20261023-2" />
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
 <header class="site-header light" data-header>
     <a class="brand" href="index.html"><img width="688" height="402" decoding="async" src="../assets/brand/kemesser-logo-web.png" alt="Kemesser Technology" /></a>
-    <nav class="main-nav"><a href="index.html">Home</a><a href="about.html">About Us</a><a href="thawing.html">Thawing</a><a href="cryo.html">Cryopreservation</a><a href="cold-operation.html">Cold Operation</a><a href="downloads.html">Downloads</a><a href="contact.html">Contact Us</a></nav>
-    <a class="nav-cta" href="inquiry.html">Sales Inquiry</a>
-    <button class="menu-button" type="button" data-menu-button aria-label="Open menu"><span></span><span></span></button>
+    <nav class="main-nav" id="site-navigation" aria-label="Main navigation"><a href="index.html">Home</a><a href="about.html">About Us</a><a href="thawing.html">Thawing</a><a href="cryo.html">Cryopreservation</a><a href="cold-operation.html">Cold Operation</a><a href="downloads.html">Downloads</a><a href="contact.html">Contact Us</a></nav>
+    <a class="nav-cta" href="../inquiry.html" lang="zh-CN" aria-label="切换到中文">中文</a>
+    <button class="menu-button" type="button" data-menu-button aria-controls="site-navigation" aria-expanded="false" aria-label="Open menu"><span></span><span></span></button>
   </header>
-<main><section class="page-hero"><p class="eyebrow reveal">INQUIRY</p><h1 class="reveal">Sales Inquiry</h1><p class="reveal">Tell us about the product, application and purchasing plan. Our team will contact you shortly.</p></section><section class="section form-section"><form class="kemesser-form reveal" data-kemesser-form data-form-type="inquiry"><div class="form-grid"><label>Name *<input name="Name" required /></label><label>Company *<input name="Company" required /></label><label>Phone *<input name="Phone" required /></label><label>Email<input type="email" name="Email" /></label><label>Country / Region<input name="Country / Region" /></label><label>Product *<select name="Product" required data-product-options></select></label><label>Application<input name="Application" /></label><label>Purchasing Plan<input name="Purchasing Plan" /></label></div><label>Message<textarea name="Message"></textarea></label><label class="privacy-check"><input type="checkbox" required /> I agree that Kemesser may process my contact information to respond to this inquiry.</label><button class="btn btn-primary" type="submit">Submit Inquiry</button><p class="form-message" data-form-message></p></form></section></main>
+<main id="main-content" tabindex="-1"><section class="page-hero"><p class="eyebrow reveal">INQUIRY</p><h1 class="reveal">Sales Inquiry</h1><p class="reveal">Tell us about the product, application and purchasing plan. Our team will contact you shortly.</p></section><section class="section form-section"><form class="kemesser-form reveal" data-kemesser-form data-form-type="inquiry" aria-label="Sales inquiry">
+          <div hidden><input type="text" name="_honey" tabindex="-1" autocomplete="off" /></div><div class="form-grid"><label>Name *<input type="text" name="Name" autocomplete="name" required /></label><label>Company *<input type="text" name="Company" autocomplete="organization" required /></label><label>Phone *<input type="tel" name="Phone" autocomplete="tel" inputmode="tel" required /></label><label>Email<input type="email" name="Email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="none" /></label><label>Country / Region<input type="text" name="Country / Region" autocomplete="country-name" /></label><label>Product *<select name="Product" required data-product-options></select></label><label>Application<input name="Application" /></label><label>Purchasing Plan<input name="Purchasing Plan" /></label></div><label>Message<textarea name="Message"></textarea></label><label class="privacy-check"><input type="checkbox" name="consent" value="yes" required /> I agree that Kemesser may process my contact information to respond to this inquiry.</label><button class="btn btn-primary" type="submit">Submit Inquiry</button><p class="form-message" data-form-message role="status" aria-live="polite" aria-atomic="true"></p></form></section></main>
 <footer class="site-footer"></footer>
-<script src="../site-data.js?v=20261023-1"></script><script src="../app.js?v=20261023-1"></script>
+<script src="../site-data.js?v=20261023-2"></script><script src="../app.js?v=20261023-2"></script>
+<script defer src="../utility-pages.js?v=20261023-2"></script>
 </body>
 </html>

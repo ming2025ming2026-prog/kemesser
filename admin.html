@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex,nofollow" />
     <title>提交记录 | 杭州科默斯科技有限公司</title>
-    <link rel="stylesheet" href="styles.css?v=20261023-1" />
+    <link rel="stylesheet" href="styles.css?v=20261023-2" />
   </head>
   <body>
+    <a class="skip-link" href="#main-content">跳转到主要内容</a>
     <header class="site-header light" data-header>
       <a class="brand" href="index.html"><img width="688" height="402" decoding="async" src="assets/brand/kemesser-logo-web.png" alt="Kemesser Technology" /></a>
-      <nav class="main-nav"><a href="index.html">首页</a><a href="downloads.html">下载中心</a><a href="inquiry.html">售前询盘</a><a href="support.html">售后服务</a><a href="contact.html">联系我们</a></nav>
+      <nav class="main-nav" id="site-navigation" aria-label="主导航"><a href="index.html">首页</a><a href="downloads.html">下载中心</a><a href="inquiry.html">售前询盘</a><a href="support.html">售后服务</a><a href="contact.html">联系我们</a></nav>
       <a class="nav-cta" href="inquiry.html">咨询产品</a>
-      <button class="menu-button" type="button" data-menu-button aria-label="打开菜单"><span></span><span></span></button>
+      <button class="menu-button" type="button" data-menu-button aria-controls="site-navigation" aria-expanded="false" aria-label="打开菜单"><span></span><span></span></button>
     </header>
-    <main>
+    <main id="main-content" tabindex="-1">
       <section class="page-hero"><p class="eyebrow reveal">LOCAL RECORDS</p><h1 class="reveal">提交记录</h1><p class="reveal">本页仅显示当前浏览器保存的提交记录。</p></section>
       <section class="section utility-panel">
         <div class="filter-bar reveal"><button class="btn btn-primary" type="button" data-export-records>导出 JSON</button><button class="btn btn-ghost dark" type="button" data-clear-records>清空记录</button></div>
@@ -22,6 +23,7 @@
       </section>
     </main>
     <footer class="site-footer"></footer>
-    <script src="site-data.js?v=20261023-1"></script><script src="app.js?v=20261023-1"></script>
-  </body>
+    <script src="site-data.js?v=20261023-2"></script><script src="app.js?v=20261023-2"></script>
+  <script defer src="utility-pages.js?v=20261023-2"></script>
+</body>
 </html>

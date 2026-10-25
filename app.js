@@ -4,16 +4,59 @@ const heroVideo = document.querySelector("[data-hero-video]");
 const footer = document.querySelector(".site-footer");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const isEnglish = document.documentElement.lang.toLowerCase().startsWith("en");
+const translateProductName = (name, english = isEnglish) => english
+  ? name.replace(" 管式", " Tube").replace(" 袋式", " Bag").replace(/^其他$/, "Other")
+  : name.replace(" Tube", " 管式").replace(" Bag", " 袋式").replace(/^Other$/, "其他");
+const languageHref = (file) => {
+  if (["admin.html", "404.html"].includes(file)) file = "index.html";
+  const params = new URLSearchParams(location.search);
+  if (params.has("product")) params.set("product", translateProductName(params.get("product"), !isEnglish));
+  const query = params.toString();
+  return `${isEnglish ? "../" : "en/"}${file}${query ? `?${query}` : ""}${location.hash}`;
+};
+const updateQueryState = (key, value) => {
+  const url = new URL(location.href);
+  if (value) url.searchParams.set(key, value);
+  else url.searchParams.delete(key);
+  try { history.replaceState(null, "", url); } catch (_) { /* Offline file previews may restrict History APIs. */ }
+  document.querySelectorAll(".language-switch, .nav-cta").forEach((link) => { link.href = languageHref(currentFile); });
+};
+
+const closeDropdowns = () => {
+  document.querySelectorAll(".nav-dropdown.is-open").forEach((dropdown) => {
+    dropdown.classList.remove("is-open");
+    dropdown.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+  });
+};
+const closeNavigation = () => {
+  header?.classList.remove("is-open");
+  menuButton?.setAttribute("aria-expanded", "false");
+  menuButton?.setAttribute("aria-label", isEnglish ? "Open menu" : "打开菜单");
+  closeDropdowns();
+};
 
 menuButton?.setAttribute("aria-expanded", "false");
 
 if (heroVideo) {
   let heroVideoLoaded = false;
   let heroInView = true;
+  let manuallyPaused = false;
+  let manuallyStarted = false;
   const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+  heroVideo.id ||= "hero-video";
+  const videoToggle = document.createElement("button");
+  videoToggle.type = "button";
+  videoToggle.className = "hero-video-toggle";
+  videoToggle.setAttribute("aria-controls", heroVideo.id);
+  videoToggle.hidden = true;
+  heroVideo.closest(".video-hero").append(videoToggle);
+  const syncVideoToggle = () => {
+    videoToggle.textContent = heroVideo.paused ? (isEnglish ? "Play video" : "播放视频") : (isEnglish ? "Pause video" : "暂停视频");
+  };
   const tryPlayHeroVideo = () => {
-    if (document.visibilityState === "hidden" || !heroInView || motionPreference.matches) {
+    if (document.visibilityState === "hidden" || !heroInView || manuallyPaused || (motionPreference.matches && !manuallyStarted)) {
       heroVideo.pause();
+      syncVideoToggle();
       return;
     }
     heroVideo.muted = true;
@@ -56,11 +99,22 @@ if (heroVideo) {
 
   heroVideo.addEventListener("loadeddata", () => {
     heroVideo.classList.add("is-ready");
+    videoToggle.hidden = false;
     tryPlayHeroVideo();
+  });
+  heroVideo.addEventListener("play", syncVideoToggle);
+  heroVideo.addEventListener("pause", syncVideoToggle);
+  videoToggle.addEventListener("click", () => {
+    manuallyPaused = !heroVideo.paused;
+    manuallyStarted = !manuallyPaused;
+    loadHeroVideo();
   });
   heroVideo.addEventListener("canplay", tryPlayHeroVideo);
   document.addEventListener("visibilitychange", tryPlayHeroVideo);
-  motionPreference.addEventListener("change", tryPlayHeroVideo);
+  motionPreference.addEventListener("change", () => {
+    manuallyStarted = false;
+    tryPlayHeroVideo();
+  });
   window.addEventListener("pageshow", tryPlayHeroVideo);
   window.addEventListener("pagehide", () => heroVideo.pause());
   const videoObserver = new IntersectionObserver(([entry]) => {
@@ -92,10 +146,10 @@ if (footer) {
       </div>
       <div class="footer-col"><h3>Navigation</h3><a href="index.html">Home</a><a href="about.html">About Us</a><a href="downloads.html">Downloads</a></div>
       <div class="footer-col"><h3>Service & Contact</h3><a href="inquiry.html">Sales Inquiry</a><a href="support.html">After-sales Service</a><a href="contact.html">Contact Us</a></div>
-      <div class="footer-col"><h3>Product Series</h3><a href="thawing.html">Thawing</a><a href="cryo.html">Cryopreservation</a><a href="cold-operation.html">Cold Operation</a></div>
+      <div class="footer-col"><h3>Product Series</h3><a href="thawing.html">Thawing</a><a href="cryo.html">Cryopreservation</a><a href="cold-operation.html">Cold Operation</a><a href="compare.html">Compare Products</a></div>
       <div class="footer-col"><h3>Featured Products</h3><a href="product-thawline.html">ThawLINE</a><a href="product-thawline-pro.html">ThawLINE Pro</a><a href="product-thawwaker.html">ThawWaker</a><a href="product-cellhome.html">CellHome</a></div>
       <div class="footer-contact">
-        <h3>Contact</h3><strong>International Sales</strong><a href="tel:+8619975273716">+86 19975273716</a><strong>Tel</strong><a href="tel:057187156759">+86 571 8715 6759</a><a href="tel:057187156259">+86 571 8715 6259</a>
+        <h3>Contact</h3><strong>International Sales</strong><a href="tel:+8619975273716">+86 19975273716</a><strong>Tel</strong><a href="tel:+8657187156759">+86 571 8715 6759</a><a href="tel:+8657187156259">+86 571 8715 6259</a>
         <strong>Email</strong><a href="mailto:khaleesi@kemesser.com">khaleesi@kemesser.com</a>
         <strong>Address</strong><a href="contact.html">Rooms 610 & 611, Building 1, Huixing Center, Taohuahu, Dinglan Subdistrict, Shangcheng District, Hangzhou, Zhejiang, China</a>
       </div>
@@ -129,6 +183,7 @@ if (footer) {
         <a href="thawing.html">复苏系列</a>
         <a href="cryo.html">冻存系列</a>
         <a href="cold-operation.html">冷冻操作</a>
+        <a href="compare.html">产品对比</a>
       </div>
       <div class="footer-col">
         <h3>重点产品</h3>
@@ -159,6 +214,9 @@ if (footer) {
 }
 
 const currentFile = location.pathname.split("/").pop() || "index.html";
+const sectionFile = /^(product-(thaw|mobi)|thawing-)/.test(currentFile) ? "thawing.html"
+  : currentFile === "product-cellhome.html" ? "cryo.html"
+    : /^product-(cool|holder|block|trans|ice)/.test(currentFile) ? "cold-operation.html" : currentFile;
 // Load the third-party chat only after the first screen is responsive.
 const loadCustomerService = () => {
   if (document.getElementById("kemesser-53kf-script")) return;
@@ -170,18 +228,16 @@ const loadCustomerService = () => {
 };
 
 const scheduleCustomerService = () => {
-  const loadWhenIdle = () => window.setTimeout(loadCustomerService, 180);
-  if ("requestIdleCallback" in window) {
-    window.requestIdleCallback(loadWhenIdle, { timeout: 1200 });
-  } else {
-    loadWhenIdle();
-  }
+  window.setTimeout(() => {
+    if ("requestIdleCallback" in window) window.requestIdleCallback(loadCustomerService, { timeout: 1200 });
+    else loadCustomerService();
+  }, 1200);
 };
 
-if (document.readyState === "complete") {
-  scheduleCustomerService();
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", scheduleCustomerService, { once: true });
 } else {
-  window.addEventListener("load", scheduleCustomerService, { once: true });
+  scheduleCustomerService();
 }
 
 const servicePages = new Set(["inquiry.html", "support.html", "contact.html"]);
@@ -201,7 +257,7 @@ const inquiryProductByPage = {
 };
 
 if (inquiryProductByPage[currentFile]) {
-  document.querySelectorAll('.detail-copy .btn[href^="inquiry.html"]').forEach((link) => {
+  document.querySelectorAll('main a[href^="inquiry.html"]').forEach((link) => {
     link.href = `inquiry.html?product=${encodeURIComponent(inquiryProductByPage[currentFile])}`;
   });
 }
@@ -229,10 +285,10 @@ document.querySelectorAll(".main-nav").forEach((nav) => {
   const dropdown = document.createElement("div");
   dropdown.className = "nav-dropdown";
   dropdown.innerHTML = `
-    <button class="nav-dropdown-trigger" type="button" aria-expanded="false" aria-haspopup="true">
+    <button class="nav-dropdown-trigger" type="button" aria-expanded="false" aria-controls="service-links">
       <span>${isEnglish ? "Service & Contact" : "服务与联系"}</span>
     </button>
-    <div class="nav-dropdown-menu">
+    <div class="nav-dropdown-menu" id="service-links">
       <a href="inquiry.html">${isEnglish ? "Sales Inquiry" : "售前咨询"}</a>
       <a href="support.html">${isEnglish ? "After-sales Service" : "售后服务"}</a>
       <a href="contact.html">${isEnglish ? "Contact Us" : "联系我们"}</a>
@@ -242,26 +298,46 @@ document.querySelectorAll(".main-nav").forEach((nav) => {
 
   const languageSwitch = document.createElement("a");
   languageSwitch.className = "language-switch mobile-language-switch";
-  languageSwitch.href = isEnglish ? `../${currentFile}` : `en/${currentFile}`;
+  languageSwitch.href = languageHref(currentFile);
   languageSwitch.textContent = isEnglish ? "中文" : "English";
   languageSwitch.setAttribute("aria-label", isEnglish ? "切换到中文" : "Switch to English");
   nav.append(languageSwitch);
 
   nav.querySelectorAll("a").forEach((link) => {
     if (link.getAttribute("href") === currentFile) link.setAttribute("aria-current", "page");
+    else if (link.getAttribute("href") === sectionFile) link.setAttribute("aria-current", "true");
   });
 
   const trigger = dropdown.querySelector(".nav-dropdown-trigger");
   if (servicePages.has(currentFile)) trigger.setAttribute("aria-current", "page");
+  let closeTimer;
+  let openedByHover = false;
+  const setOpen = (open, source = "explicit") => {
+    window.clearTimeout(closeTimer);
+    if (open) closeDropdowns();
+    openedByHover = open && source === "hover";
+    dropdown.classList.toggle("is-open", open);
+    trigger.setAttribute("aria-expanded", String(open));
+  };
 
   trigger.addEventListener("click", () => {
-    const willOpen = !dropdown.classList.contains("is-open");
-    document.querySelectorAll(".nav-dropdown.is-open").forEach((item) => {
-      item.classList.remove("is-open");
-      item.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
-    });
-    dropdown.classList.toggle("is-open", willOpen);
-    trigger.setAttribute("aria-expanded", String(willOpen));
+    setOpen(!dropdown.classList.contains("is-open") || openedByHover);
+  });
+  trigger.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowDown") return;
+    event.preventDefault();
+    setOpen(true);
+    dropdown.querySelector(".nav-dropdown-menu a")?.focus();
+  });
+  dropdown.addEventListener("pointerenter", () => {
+    window.clearTimeout(closeTimer);
+    if (!dropdown.classList.contains("is-open") && window.matchMedia("(hover: hover) and (min-width: 1201px)").matches) setOpen(true, "hover");
+  });
+  dropdown.addEventListener("pointerleave", () => {
+    if (!dropdown.contains(document.activeElement)) closeTimer = window.setTimeout(() => setOpen(false), 140);
+  });
+  dropdown.addEventListener("focusout", (event) => {
+    if (!dropdown.contains(event.relatedTarget)) setOpen(false);
   });
 });
 
@@ -275,7 +351,7 @@ document.querySelectorAll("[data-card-link]").forEach((card) => {
   });
 });
 document.querySelectorAll(".nav-cta").forEach((cta) => {
-  cta.href = isEnglish ? `../${currentFile}` : `en/${currentFile}`;
+  cta.href = languageHref(currentFile);
   cta.textContent = isEnglish ? "中文" : "English";
   cta.setAttribute("aria-label", isEnglish ? "切换到中文" : "Switch to English");
 });
@@ -297,22 +373,17 @@ window.addEventListener("scroll", () => {
 }, { passive: true });
 
 menuButton?.addEventListener("click", () => {
-  const isOpen = header?.classList.toggle("is-open") || false;
+  const isOpen = !header?.classList.contains("is-open");
+  closeNavigation();
+  header?.classList.toggle("is-open", isOpen);
   menuButton.setAttribute("aria-expanded", String(isOpen));
   menuButton.setAttribute("aria-label", isOpen ? (isEnglish ? "Close menu" : "关闭菜单") : (isEnglish ? "Open menu" : "打开菜单"));
 });
 
 document.querySelectorAll(".main-nav a").forEach((link) => {
-  link.addEventListener("click", () => {
-    header?.classList.remove("is-open");
-    menuButton?.setAttribute("aria-expanded", "false");
-    menuButton?.setAttribute("aria-label", isEnglish ? "Open menu" : "打开菜单");
-    document.querySelectorAll(".nav-dropdown.is-open").forEach((dropdown) => {
-      dropdown.classList.remove("is-open");
-      dropdown.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
-    });
-  });
+  link.addEventListener("click", closeNavigation);
 });
+window.matchMedia("(max-width: 1200px)").addEventListener("change", closeNavigation);
 
 // Warm up a local page only after the visitor shows intent to open it.
 // This keeps initial loading light while making navigation feel immediate.
@@ -341,6 +412,7 @@ document.querySelectorAll('a[href$=".html"], [data-card-link]').forEach((link) =
 });
 
 document.addEventListener("click", (event) => {
+  if (!header?.contains(event.target)) closeNavigation();
   document.querySelectorAll(".nav-dropdown.is-open").forEach((dropdown) => {
     if (dropdown.contains(event.target)) return;
     dropdown.classList.remove("is-open");
@@ -350,13 +422,11 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
-  header?.classList.remove("is-open");
-  menuButton?.setAttribute("aria-expanded", "false");
-  menuButton?.setAttribute("aria-label", isEnglish ? "Open menu" : "打开菜单");
-  document.querySelectorAll(".nav-dropdown.is-open").forEach((dropdown) => {
-    dropdown.classList.remove("is-open");
-    dropdown.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
-  });
+  const wasMobileOpen = header?.classList.contains("is-open");
+  const activeDropdown = document.activeElement?.closest(".nav-dropdown");
+  closeNavigation();
+  if (wasMobileOpen) menuButton?.focus();
+  else activeDropdown?.querySelector(".nav-dropdown-trigger")?.focus();
 });
 
 if (reducedMotion) {
@@ -366,218 +436,30 @@ if (reducedMotion) {
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
+          entry.target.classList.remove("is-pending");
           entry.target.classList.add("is-visible");
           revealObserver.unobserve(entry.target);
         }
       });
     },
-    { threshold: 0.12, rootMargin: "0px 0px -6%" }
+    { threshold: 0, rootMargin: "0px 0px 80px" }
   );
 
   document.querySelectorAll(".reveal").forEach((node, index) => {
-    node.style.transitionDelay = `${Math.min(index % 3, 2) * 35}ms`;
-    revealObserver.observe(node);
+    if (node.getBoundingClientRect().top < window.innerHeight + 80) {
+      node.classList.add("is-visible");
+    } else {
+      node.classList.add("is-pending");
+      node.style.transitionDelay = `${Math.min(index % 3, 2) * 30}ms`;
+      revealObserver.observe(node);
+    }
+  });
+  document.addEventListener("focusin", (event) => {
+    const hiddenSection = event.target.closest(".reveal.is-pending");
+    if (!hiddenSection) return;
+    hiddenSection.classList.remove("is-pending");
+    hiddenSection.classList.add("is-visible");
   });
 }
 
-const productOptions = document.querySelectorAll("[data-product-options]");
-productOptions.forEach((select) => {
-  const englishProductNames = {
-    "thawhome-tube": "ThawHome Tube",
-    "thawhome-bag": "ThawHome Bag"
-  };
-  select.innerHTML = `<option value="">${isEnglish ? "Please select" : "请选择"}</option>${(window.KEMESSER_PRODUCTS || []).map((item) => {
-    const label = isEnglish ? (englishProductNames[item.id] || item.name) : item.name;
-    return `<option value="${label}">${label}</option>`;
-  }).join("")}<option value="${isEnglish ? "Other" : "其他"}">${isEnglish ? "Other" : "其他"}</option>`;
-  const requestedProduct = new URLSearchParams(location.search).get("product");
-  if (requestedProduct && Array.from(select.options).some((option) => option.value === requestedProduct)) {
-    select.value = requestedProduct;
-  }
-});
-
-const manualTable = document.querySelector("[data-manual-table]");
-const englishSeries = { "复苏系列": "Thawing", "冻存系列": "Cryopreservation", "冷冻操作": "Cold Operation" };
-const englishTypes = {
-  "管式细胞复苏仪": "Tube Cell Thawing System",
-  "袋式细胞复苏仪": "Bag Cell Thawing System",
-  "程序降温盒": "Controlled-rate Freezing Container"
-};
-const renderManuals = () => {
-  if (!manualTable || !window.KEMESSER_MANUALS) return;
-  const series = document.querySelector('[data-manual-filter="series"]')?.value || "";
-  const language = document.querySelector('[data-manual-filter="language"]')?.value || "";
-  const query = (document.querySelector("[data-manual-search]")?.value || "").trim().toLowerCase();
-  const rows = KEMESSER_MANUALS.filter((item) => {
-    const translatedText = isEnglish
-      ? `${englishSeries[item.series] || ""} ${englishTypes[item.type] || ""} ${item.language === "中文" ? "Chinese" : item.language}`
-      : "";
-    const text = `${item.product} ${item.series} ${item.type} ${item.language} ${translatedText}`.toLowerCase();
-    return (!series || item.series === series) && (!language || item.language === language) && (!query || text.includes(query));
-  });
-  manualTable.querySelector("tbody").innerHTML = rows.map((item) => {
-    const product = isEnglish ? item.product.replace(" 管式", " Tube").replace(" 袋式", " Bag") : item.product;
-    const seriesLabel = isEnglish ? (englishSeries[item.series] || item.series) : item.series;
-    const typeLabel = isEnglish ? (englishTypes[item.type] || item.type) : item.type;
-    const languageLabel = isEnglish && item.language === "中文" ? "Chinese" : item.language;
-    const file = isEnglish ? `../${item.file}` : item.file;
-    return `<tr><td>${product}</td><td>${seriesLabel}</td><td>${typeLabel}</td><td>${languageLabel}</td><td>${item.version}</td><td>${item.updated}</td><td>${item.size}</td><td><a class="table-link" href="${file}" target="_blank" rel="noreferrer">${isEnglish ? "Download Manual" : "下载说明书"}</a></td></tr>`;
-  }).join("");
-  const empty = document.querySelector("[data-manual-empty]");
-  if (empty) empty.hidden = rows.length > 0;
-};
-document.querySelectorAll("[data-manual-filter], [data-manual-search]").forEach((node) => node.addEventListener("input", renderManuals));
-renderManuals();
-
-const compareTable = document.querySelector("[data-compare-table]");
-const englishProductDetails = {
-  thawline: ["Tube Cell Thawing System", "Tube-format frozen samples", "Four-channel thawing / Access control / SD card storage / PC export"],
-  "thawline-pro": ["Tube Cell Thawing System", "Standardized laboratories with multiple users, roles and sample batches", "Three-level access / Run profiles / Bluetooth printing / Temperature curves"],
-  thawwaker: ["Bag Cell Thawing System", "Cryobags, cell bags, blood bags and other bag-format samples", "Capacity-based settings / Adaptive heated lid / Emergency stop / Dynamic sensing"],
-  "thawhome-tube": ["Tube Cell Thawing System", "Multiple tube formats", "Water-free thawing / Four independent channels / Alerts / Efficient operation"],
-  "thawhome-bag": ["Bag Cell Thawing System", "Bag-format frozen samples", "Water-free thawing / Telescopic heated lid / Alerts / Efficient operation"],
-  mobithaw: ["Portable Cell Thawing System", "Mobile workflows, small laboratories and temporary processing", "Type-C charging / Water-free thawing / Data export / Ozone disinfection"],
-  cellhome: ["Controlled-rate Freezing Container", "Controlled cooling and standardized sample management for cell cryopreservation", "No auxiliary cooling liquid / Consistent cooling rate / Multiple formats / Reusable"],
-  coolhome: ["Ice-free Workstation", "Low-temperature handling and sample processing", "Ice-free operation / Sample processing / Multiple workstation configurations"],
-  holderhome: ["Ice-free Freezing Container", "Short-term cold storage and sample handling", "Short-term cold storage / Ice-free operation / Benchtop use"],
-  blockhome: ["Tube Module", "Multiple tube and vial formats", "Modular positions / Sample organization / Batch handling"],
-  transhome: ["Dry Ice Transport Container", "Low-temperature sample transport and transfer", "Cold transport / Protection during handling / Flexible transfer applications"],
-  icehome: ["Ice Pan and Bucket", "Laboratory low-temperature handling", "Cooling support / Flexible combinations / Easy handling"]
-};
-const renderCompare = () => {
-  if (!compareTable || !window.KEMESSER_PRODUCTS) return;
-  const query = (document.querySelector("[data-compare-search]")?.value || "").trim().toLowerCase();
-  const rows = KEMESSER_PRODUCTS.filter((item) => {
-    const translated = englishProductDetails[item.id] || [];
-    return `${item.name} ${item.type} ${item.scenario} ${item.features} ${translated.join(" ")}`.toLowerCase().includes(query);
-  });
-  compareTable.querySelector("tbody").innerHTML = rows.map((item) => {
-    const manual = (window.KEMESSER_MANUALS || []).find((m) => m.productId === item.id);
-    const manualFile = manual ? (isEnglish ? `../${manual.file}` : manual.file) : "";
-    const translated = englishProductDetails[item.id] || [item.type, item.scenario, item.features];
-    const productName = isEnglish ? item.name.replace(" 管式", " Tube").replace(" 袋式", " Bag") : item.name;
-    return `<tr><td><strong>${productName}</strong><br><a class="table-link" href="${item.url}">${isEnglish ? "View Details" : "查看详情"}</a></td><td>${isEnglish ? translated[0] : item.type}</td><td>${isEnglish ? translated[1] : item.scenario}</td><td>${isEnglish ? translated[2] : item.features}</td><td>${manual ? `<a class="table-link" href="${manualFile}" target="_blank" rel="noreferrer">${isEnglish ? "Download Manual" : "下载说明书"}</a>` : (isEnglish ? "Contact us for documentation" : "请联系科默斯获取资料")}</td></tr>`;
-  }).join("");
-};
-document.querySelector("[data-compare-search]")?.addEventListener("input", renderCompare);
-renderCompare();
-
-document.querySelectorAll("[data-kemesser-form]").forEach((form) => {
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (form.dataset.submitting === "true") return;
-    if (!form.reportValidity()) return;
-    const message = form.querySelector("[data-form-message]");
-    const submit = form.querySelector('button[type="submit"]');
-    const isSupport = form.dataset.formType === "support";
-    const originalLabel = isEnglish
-      ? (isSupport ? "Submit Service Request" : "Submit Inquiry")
-      : (isSupport ? "提交售后工单" : "提交询盘");
-
-    submit.disabled = true;
-    form.dataset.submitting = "true";
-    message.setAttribute("role", "status");
-    message.setAttribute("aria-live", "polite");
-    submit.textContent = isEnglish ? "Submitting..." : "提交中...";
-    message.textContent = "";
-    const requestController = new AbortController();
-    const requestTimeout = window.setTimeout(() => requestController.abort(), 30000);
-
-    try {
-      const formData = new FormData(form);
-      const visitorEmail = formData.get(isEnglish ? "Email" : "邮箱");
-      formData.set("_subject", isEnglish
-        ? (isSupport ? "[Kemesser Website] After-sales Service Request" : "[Kemesser Website] Sales Inquiry")
-        : (isSupport ? "【科默斯官网】售后服务工单" : "【科默斯官网】售前咨询"));
-      formData.set("_cc", "khaleesi@kemesser.com,chens@kemesser.com");
-      formData.set("_template", "table");
-      formData.set("提交页面", window.location.href);
-      formData.set("提交时间", new Date().toLocaleString());
-      if (visitorEmail) formData.set("_replyto", visitorEmail);
-
-      const response = await fetch("https://formsubmit.co/ajax/andy@kemesser.com", {
-        method: "POST",
-        headers: { Accept: "application/json" },
-        body: formData,
-        signal: requestController.signal
-      });
-      if (!response.ok) throw new Error("Form submission failed");
-      const result = await response.json();
-      if (result.success !== true && result.success !== "true") throw new Error("Form submission rejected");
-
-      const record = {
-        type: form.dataset.formType,
-        createdAt: new Date().toLocaleString(),
-        data: Object.fromEntries(new FormData(form).entries())
-      };
-      // Browser storage is optional; a storage failure must not report a sent message as failed.
-      try {
-        const stored = JSON.parse(localStorage.getItem("kemesser-submissions") || "[]");
-        const records = Array.isArray(stored) ? stored : [];
-        records.unshift(record);
-        localStorage.setItem("kemesser-submissions", JSON.stringify(records.slice(0, 50)));
-      } catch (_) { /* Private browsing or storage quotas may prevent local history. */ }
-
-      message.textContent = isEnglish
-        ? (isSupport
-          ? "Your service request has been submitted. The Kemesser technical support team will contact you after reviewing the information."
-          : "Your inquiry has been submitted. The Kemesser team will contact you shortly.")
-        : (isSupport
-          ? "您的售后工单已提交成功。科默斯技术支持团队将根据您提供的信息进行排查，请保持电话或邮箱畅通。"
-          : "提交成功，科默斯团队将尽快与您联系。");
-      form.reset();
-    } catch (error) {
-      message.textContent = isEnglish
-        ? "Submission failed. Please try again later or email khaleesi@kemesser.com directly."
-        : "提交未成功，请稍后重试或直接发送邮件至 andy@kemesser.com。";
-    } finally {
-      window.clearTimeout(requestTimeout);
-      submit.disabled = false;
-      delete form.dataset.submitting;
-      submit.textContent = originalLabel;
-    }
-  });
-});
-
-const recordsList = document.querySelector("[data-records-list]");
-const renderRecords = () => {
-  if (!recordsList) return;
-  let records = [];
-  try {
-    const stored = JSON.parse(localStorage.getItem("kemesser-submissions") || "[]");
-    if (Array.isArray(stored)) records = stored;
-  } catch (_) { /* Local history may be unavailable. */ }
-  recordsList.replaceChildren();
-  records.forEach((record) => {
-    const article = document.createElement("article");
-    article.className = "record-card";
-    const heading = document.createElement("h2");
-    heading.textContent = `${record.type === "support" ? "售后工单" : "售前询盘"} · ${record.createdAt}`;
-    const details = document.createElement("pre");
-    details.textContent = JSON.stringify(record.data, null, 2);
-    article.append(heading, details);
-    recordsList.append(article);
-  });
-  if (!records.length) {
-    const empty = document.createElement("div");
-    empty.className = "empty-state";
-    empty.textContent = "暂无提交记录。";
-    recordsList.append(empty);
-  }
-};
-document.querySelector("[data-export-records]")?.addEventListener("click", () => {
-  const blob = new Blob([localStorage.getItem("kemesser-submissions") || "[]"], { type: "application/json;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "kemesser-submissions.json";
-  link.click();
-  URL.revokeObjectURL(url);
-});
-document.querySelector("[data-clear-records]")?.addEventListener("click", () => {
-  if (confirm("确认清空本地提交记录？")) {
-    localStorage.removeItem("kemesser-submissions");
-    renderRecords();
-  }
-});
-renderRecords();
+window.KEMESSER_UI = Object.freeze({ isEnglish, translateProductName, updateQueryState });
