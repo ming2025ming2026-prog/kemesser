@@ -25,7 +25,7 @@
     region.setAttribute("role", "region");
     region.setAttribute("aria-label", region.querySelector("table")?.getAttribute("aria-label") || (isEnglish ? "Product table, scroll horizontally" : "产品表格，可横向滚动"));
   });
-  const englishSeries = { "复苏系列": "Thawing", "冻存系列": "Cryopreservation", "冷冻操作": "Cold Operation" };
+  const englishSeries = { "复苏系列": "Thawing", "冻存系列": "Cryopreservation", "冷冻操作": "Cold Handling" };
   const englishTypes = {
     "管式细胞复苏仪": "Tube Cell Thawing System",
     "袋式细胞复苏仪": "Bag Cell Thawing System",
@@ -80,16 +80,16 @@
   compareEmpty.textContent = isEnglish ? "No matching products. Try another keyword or contact Kemesser for help." : "未找到匹配产品，请更换关键词，或联系科默斯协助选型。";
   compareTable?.closest(".table-card")?.after(compareEmpty);
   const englishProductDetails = {
-    thawline: ["Tube Cell Thawing System", "Tube-format frozen samples", "Four-channel thawing / Access control / SD card storage / PC export"],
+    thawline: ["Tube Cell Thawing System", "Cryovials, test tubes, injection vials and other tube-format samples", "Four-channel parallel thawing / Two-level access control / SD card storage / PC export"],
     "thawline-pro": ["Tube Cell Thawing System", "Standardized laboratories with multiple users, roles and sample batches", "Three-level access / Run profiles / Bluetooth printing / Temperature curves"],
-    thawwaker: ["Bag Cell Thawing System", "Cryobags, cell bags, blood bags and other bag-format samples", "Capacity-based settings / Adaptive heated lid / Emergency stop / Dynamic sensing"],
-    "thawhome-tube": ["Tube Cell Thawing System", "Multiple tube formats", "Water-free thawing / Four independent channels / Alerts / Efficient operation"],
-    "thawhome-bag": ["Bag Cell Thawing System", "Bag-format frozen samples", "Water-free thawing / Telescopic heated lid / Alerts / Efficient operation"],
+    thawwaker: ["Bag Cell Thawing System", "Cryobags, cell bags, blood bags and other bag-format samples", "Sample-volume adaptation / Conforming heated lid / Emergency stop / Dynamic sensing"],
+    "thawhome-tube": ["Tube Cell Thawing System", "Multiple tube formats", "Water-free thawing / Four independent channels / Real-time alarms / Energy-efficient operation"],
+    "thawhome-bag": ["Bag Cell Thawing System", "Bag-format frozen samples", "Water-free thawing / Telescopic heated lid / Real-time alarms / Energy-efficient operation"],
     mobithaw: ["Portable Cell Thawing System", "Mobile workflows, small laboratories and temporary processing", "Type-C charging / Water-free thawing / Data export / Ozone disinfection"],
-    cellhome: ["Controlled-rate Freezing Container", "Controlled cooling and standardized sample management for cell cryopreservation", "No auxiliary cooling liquid / Consistent cooling rate / Multiple formats / Reusable"],
+    cellhome: ["Controlled-rate Freezing Container", "Controlled cooling and standardized sample management for cell cryopreservation", "No auxiliary materials required / Consistent cooling rate / Multiple formats / Reusable"],
     coolhome: ["Ice-free Workstation", "Low-temperature handling and sample processing", "Ice-free operation / Sample processing / Multiple workstation configurations"],
-    holderhome: ["Ice-free Freezing Container", "Short-term cold storage and sample handling", "Short-term cold storage / Ice-free operation / Benchtop use"],
-    blockhome: ["Tube Module", "Multiple tube and vial formats", "Modular positions / Sample organization / Batch handling"],
+    holderhome: ["Ice-free Low-temperature Container", "Short-term cold storage and sample handling", "Short-term cold storage / Ice-free operation / Benchtop use"],
+    blockhome: ["Tube Module", "Positions for multiple test tube and cryovial formats", "Modular positions / Separate sample areas / Batch handling"],
     transhome: ["Dry Ice Transport Container", "Low-temperature sample transport and transfer", "Cold transport / Protection during handling / Flexible transfer applications"],
     icehome: ["Ice Pan and Bucket", "Laboratory low-temperature handling", "Cooling support / Flexible combinations / Easy handling"]
   };
@@ -207,7 +207,7 @@
 
         showFormMessage(isEnglish
           ? (isSupport
-            ? "Your service request has been submitted. The Kemesser technical support team will contact you after reviewing the information."
+            ? "Your service request has been submitted. The Kemesser technical support team will investigate using the information provided. Please keep your phone or email available for follow-up."
             : "Your inquiry has been submitted. The Kemesser team will contact you shortly.")
           : (isSupport
             ? "您的售后工单已提交成功。科默斯技术支持团队将根据您提供的信息进行排查，请保持电话或邮箱畅通。"
