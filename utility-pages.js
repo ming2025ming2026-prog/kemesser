@@ -118,26 +118,49 @@
   renderCompare();
 
   document.querySelectorAll("[data-kemesser-form]").forEach((form) => {
+    let hasUnsavedChanges = false;
+    const warnBeforeLeaving = event => {
+      if (!hasUnsavedChanges) return;
+      event.preventDefault();
+      event.returnValue = "";
+    };
     const message = form.querySelector("[data-form-message]");
     message.setAttribute("role", "status");
     message.setAttribute("aria-live", "polite");
+    const localCopyLabel = document.createElement("label");
+    localCopyLabel.className = "privacy-check";
+    const localCopy = document.createElement("input");
+    localCopy.type = "checkbox";
+    localCopy.dataset.localCopy = "";
+    localCopyLabel.append(localCopy, document.createTextNode(isEnglish
+      ? "Keep a copy in this browser for 7 days (do not select on shared devices)."
+      : "在此浏览器保留副本 7 天（共用设备请勿勾选）。"));
+    form.querySelector('button[type="submit"]').before(localCopyLabel);
     const showFormMessage = (text, state) => {
       message.textContent = text;
       message.dataset.state = state;
     };
     form.addEventListener("input", () => {
+      if (!hasUnsavedChanges) window.addEventListener("beforeunload", warnBeforeLeaving);
+      hasUnsavedChanges = true;
       if (form.dataset.submitting !== "true") showFormMessage("", "idle");
     });
     form.querySelectorAll('input[type="file"]').forEach((input) => {
       input.addEventListener("change", () => {
         const files = Array.from(form.querySelectorAll('input[type="file"]')).flatMap((el) => Array.from(el.files || []));
-        input.setCustomValidity(files.reduce((size, file) => size + file.size, 0) > 10000000
-          ? (isEnglish ? "Attachments must total 10 MB or less." : "附件总大小不能超过 10 MB。") : "");
+        const unsupported = files.some(file => !/\.(png|jpe?g|webp|pdf|txt)$/i.test(file.name));
+        input.setCustomValidity(unsupported
+          ? (isEnglish ? "Choose a PNG, JPG, JPEG, WebP, PDF or TXT file." : "请选择 PNG、JPG、JPEG、WebP、PDF 或 TXT 文件。")
+          : files.reduce((size, file) => size + file.size, 0) > 10000000
+            ? (isEnglish ? "Attachments must total 10 MB or less." : "附件总大小不能超过 10 MB。") : "");
       });
     });
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (form.dataset.submitting === "true") return;
+      form.querySelectorAll('input:not([type="file"]):not([type="checkbox"]):not([type="hidden"]), textarea').forEach(control => {
+        control.value = control.value.trim();
+      });
       if (!form.reportValidity()) return;
       const submit = form.querySelector('button[type="submit"]');
       const isSupport = form.dataset.formType === "support";
@@ -164,7 +187,8 @@
 
       try {
         const formData = new FormData(form);
-        const submittedData = Object.fromEntries(formData.entries());
+        const keepLocalCopy = localCopy.checked;
+        const submittedData = Object.fromEntries(Array.from(formData.entries(), ([key, value]) => [key, value instanceof File ? value.name : value]));
         form.querySelectorAll("input, select, textarea").forEach((control) => {
           if (!control.disabled) {
             control.disabled = true;
@@ -192,18 +216,14 @@
         const result = await response.json();
         if (result.success !== true && result.success !== "true") throw new Error("Form submission rejected");
 
-        const record = {
-          type: form.dataset.formType,
-          createdAt: new Date().toLocaleString(),
-          data: submittedData
-        };
         // Browser storage is optional; a storage failure must not report a sent message as failed.
-        try {
-          const stored = JSON.parse(localStorage.getItem("kemesser-submissions") || "[]");
-          const records = Array.isArray(stored) ? stored : [];
-          records.unshift(record);
-          localStorage.setItem("kemesser-submissions", JSON.stringify(records.slice(0, 50)));
-        } catch (_) { /* Private browsing or storage quotas may prevent local history. */ }
+        if (keepLocalCopy) {
+          try {
+            const records = readLocalRecords();
+            records.unshift({ type: form.dataset.formType, createdAt: new Date().toLocaleString(), expiresAt: Date.now() + 7 * 86400000, data: submittedData });
+            localStorage.setItem("kemesser-submissions", JSON.stringify(records.slice(0, 50)));
+          } catch (_) { /* Private browsing or storage quotas may prevent local history. */ }
+        }
 
         showFormMessage(isEnglish
           ? (isSupport
@@ -212,7 +232,10 @@
           : (isSupport
             ? "您的售后工单已提交成功。科默斯技术支持团队将根据您提供的信息进行排查，请保持电话或邮箱畅通。"
             : "提交成功，科默斯团队将尽快与您联系。"), "success");
+        hasUnsavedChanges = false;
+        window.removeEventListener("beforeunload", warnBeforeLeaving);
         form.reset();
+        updateQueryState("product", "");
       } catch (error) {
         showFormMessage(error.name === "AbortError"
           ? (isEnglish ? "The request timed out. Delivery could not be confirmed. Check with Kemesser before resubmitting, or email khaleesi@kemesser.com."
@@ -231,12 +254,18 @@
   });
 
   const recordsList = document.querySelector("[data-records-list]");
+  function readLocalRecords() {
+    const stored = JSON.parse(localStorage.getItem("kemesser-submissions") || "[]");
+    if (!Array.isArray(stored)) return [];
+    const records = stored.filter(record => record && typeof record === "object" && (!record.expiresAt || record.expiresAt > Date.now()));
+    if (records.length !== stored.length) localStorage.setItem("kemesser-submissions", JSON.stringify(records));
+    return records;
+  }
   const renderRecords = () => {
     if (!recordsList) return;
     let records = [];
     try {
-      const stored = JSON.parse(localStorage.getItem("kemesser-submissions") || "[]");
-      if (Array.isArray(stored)) records = stored.filter((record) => record && typeof record === "object");
+      records = readLocalRecords();
     } catch (_) { /* Local history may be unavailable. */ }
     recordsList.replaceChildren();
     records.forEach((record) => {
@@ -257,7 +286,9 @@
     }
   };
   document.querySelector("[data-export-records]")?.addEventListener("click", () => {
-    const blob = new Blob([localStorage.getItem("kemesser-submissions") || "[]"], { type: "application/json;charset=utf-8" });
+    let records;
+    try { records = readLocalRecords(); } catch (_) { alert("浏览器存储不可用，无法导出记录。请检查浏览器隐私设置。"); return; }
+    const blob = new Blob([JSON.stringify(records)], { type: "application/json;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -267,7 +298,7 @@
   });
   document.querySelector("[data-clear-records]")?.addEventListener("click", () => {
     if (confirm("确认清空本地提交记录？")) {
-      localStorage.removeItem("kemesser-submissions");
+      try { localStorage.removeItem("kemesser-submissions"); } catch (_) { alert("浏览器存储不可用，无法清空记录。请检查浏览器隐私设置。"); return; }
       renderRecords();
     }
   });

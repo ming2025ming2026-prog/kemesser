@@ -42,15 +42,22 @@ if (heroVideo) {
   let heroInView = true;
   let manuallyPaused = false;
   let manuallyStarted = false;
+  let videoFailed = false;
   const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
   heroVideo.id ||= "hero-video";
+  heroVideo.setAttribute("aria-hidden", "true");
   const videoToggle = document.createElement("button");
   videoToggle.type = "button";
   videoToggle.className = "hero-video-toggle";
   videoToggle.setAttribute("aria-controls", heroVideo.id);
   videoToggle.hidden = true;
   heroVideo.closest(".video-hero").append(videoToggle);
+  const hasVideoFailure = () => videoFailed || heroVideo.error || heroVideo.networkState === HTMLMediaElement.NETWORK_NO_SOURCE;
   const syncVideoToggle = () => {
+    if (hasVideoFailure()) {
+      videoToggle.textContent = isEnglish ? "Retry video" : "重试播放";
+      return;
+    }
     videoToggle.textContent = heroVideo.paused ? (isEnglish ? "Play video" : "播放视频") : (isEnglish ? "Pause video" : "暂停视频");
   };
   const tryPlayHeroVideo = () => {
@@ -62,7 +69,7 @@ if (heroVideo) {
     heroVideo.muted = true;
     heroVideo.defaultMuted = true;
     heroVideo.playsInline = true;
-    heroVideo.play().catch(() => {});
+    heroVideo.play().catch(() => { videoToggle.hidden = false; syncVideoToggle(); });
   };
 
   const loadHeroVideo = () => {
@@ -94,13 +101,18 @@ if (heroVideo) {
   };
 
   heroVideo.addEventListener("loadeddata", () => {
+    videoFailed = false;
     heroVideo.classList.add("is-ready");
     videoToggle.hidden = false;
     tryPlayHeroVideo();
   });
   heroVideo.addEventListener("play", syncVideoToggle);
   heroVideo.addEventListener("pause", syncVideoToggle);
+  const showVideoFailure = () => { videoFailed = true; videoToggle.hidden = false; syncVideoToggle(); };
+  heroVideo.addEventListener("error", showVideoFailure);
+  heroVideo.querySelectorAll("source").forEach(source => source.addEventListener("error", showVideoFailure));
   videoToggle.addEventListener("click", () => {
+    if (hasVideoFailure()) { videoFailed = false; heroVideo.load(); }
     manuallyPaused = !heroVideo.paused;
     manuallyStarted = !manuallyPaused;
     loadHeroVideo();
@@ -118,10 +130,15 @@ if (heroVideo) {
     if (heroVideoLoaded) tryPlayHeroVideo();
   });
   videoObserver.observe(heroVideo);
-  document.addEventListener("pointerdown", loadHeroVideo, { once: true, passive: true });
-  document.addEventListener("touchstart", loadHeroVideo, { once: true, passive: true });
+  const resumeOnGesture = event => {
+    if (!event.target.closest(".hero-video-toggle")) loadHeroVideo();
+  };
+  document.addEventListener("pointerdown", resumeOnGesture, { once: true, passive: true });
+  document.addEventListener("touchstart", resumeOnGesture, { once: true, passive: true });
 
   loadHeroVideo();
+  videoToggle.hidden = false;
+  syncVideoToggle();
 }
 
 // Warm the next document on intent without intercepting or delaying navigation.
@@ -157,12 +174,12 @@ if (footer) {
           <a class="footer-button" href="downloads.html">Download Center</a>
         </div>
       </div>
-      <div class="footer-col"><h3>Navigation</h3><a href="index.html">Home</a><a href="about.html">About Us</a><a href="downloads.html">Downloads</a></div>
-      <div class="footer-col"><h3>Service & Contact</h3><a href="inquiry.html">Sales Inquiry</a><a href="support.html">After-sales Service</a><a href="contact.html">Contact Us</a></div>
-      <div class="footer-col"><h3>Product Series</h3><a href="thawing.html">Thawing</a><a href="cryo.html">Cryopreservation</a><a href="cold-operation.html">Cold Handling</a><a href="compare.html">Compare Products</a></div>
-      <div class="footer-col"><h3>Featured Products</h3><a href="product-thawline.html">ThawLINE</a><a href="product-thawline-pro.html">ThawLINE Pro</a><a href="product-thawwaker.html">ThawWaker</a><a href="product-cellhome.html">CellHome</a></div>
+      <div class="footer-col"><h2>Navigation</h2><a href="index.html">Home</a><a href="about.html">About Us</a><a href="downloads.html">Downloads</a></div>
+      <div class="footer-col"><h2>Service & Contact</h2><a href="inquiry.html">Sales Inquiry</a><a href="support.html">After-sales Service</a><a href="contact.html">Contact Us</a></div>
+      <div class="footer-col"><h2>Product Series</h2><a href="thawing.html">Thawing</a><a href="cryo.html">Cryopreservation</a><a href="cold-operation.html">Cold Handling</a><a href="compare.html">Compare Products</a></div>
+      <div class="footer-col"><h2>Featured Products</h2><a href="product-thawline.html">ThawLINE</a><a href="product-thawline-pro.html">ThawLINE Pro</a><a href="product-thawwaker.html">ThawWaker</a><a href="product-cellhome.html">CellHome</a></div>
       <div class="footer-contact">
-        <h3>Contact</h3><strong>International Sales</strong><a href="tel:+8619975273716">+86 19975273716</a><strong>Tel</strong><a href="tel:+8657187156759">+86 571 8715 6759</a><a href="tel:+8657187156259">+86 571 8715 6259</a>
+        <h2>Contact</h2><strong>International Sales</strong><a href="tel:+8619975273716">+86 19975273716</a><strong>Tel</strong><a href="tel:+8657187156759">+86 571 8715 6759</a><a href="tel:+8657187156259">+86 571 8715 6259</a>
         <strong>Email</strong><a href="mailto:khaleesi@kemesser.com">khaleesi@kemesser.com</a>
         <strong>Address</strong><a href="contact.html">Rooms 610 & 611, Building 1, Taohuahu Huixing Center, Dinglan Subdistrict, Shangcheng District, Hangzhou, Zhejiang, China</a>
       </div>
@@ -180,33 +197,33 @@ if (footer) {
         </div>
       </div>
       <div class="footer-col">
-        <h3>网站导航</h3>
+        <h2>网站导航</h2>
         <a href="index.html">首页</a>
         <a href="about.html">关于我们</a>
         <a href="downloads.html">下载中心</a>
       </div>
       <div class="footer-col">
-        <h3>服务与联系</h3>
+        <h2>服务与联系</h2>
         <a href="inquiry.html">售前咨询</a>
         <a href="support.html">售后服务</a>
         <a href="contact.html">联系我们</a>
       </div>
       <div class="footer-col">
-        <h3>产品系列</h3>
+        <h2>产品系列</h2>
         <a href="thawing.html">复苏系列</a>
         <a href="cryo.html">冻存系列</a>
         <a href="cold-operation.html">冷冻操作</a>
         <a href="compare.html">产品对比</a>
       </div>
       <div class="footer-col">
-        <h3>重点产品</h3>
+        <h2>重点产品</h2>
         <a href="product-thawline.html">ThawLINE</a>
         <a href="product-thawline-pro.html">ThawLINE Pro</a>
         <a href="product-thawwaker.html">ThawWaker</a>
         <a href="product-cellhome.html">CellHome</a>
       </div>
       <div class="footer-contact">
-        <h3>联系方式</h3>
+        <h2>联系方式</h2>
         <strong>国内业务对接</strong>
         <a href="tel:+8615372025538">+86 15372025538</a>
         <strong>电话</strong>
@@ -232,6 +249,7 @@ const sectionFile = /^(product-(thaw|mobi)|thawing-)/.test(currentFile) ? "thawi
     : /^product-(cool|holder|block|trans|ice)/.test(currentFile) ? "cold-operation.html" : currentFile;
 // Load the third-party chat only after the first screen is responsive.
 const loadCustomerService = () => {
+  if (currentFile === "admin.html") return;
   if (document.getElementById("kemesser-53kf-script")) return;
   const serviceScript = document.createElement("script");
   serviceScript.id = "kemesser-53kf-script";
@@ -391,6 +409,11 @@ menuButton?.addEventListener("click", () => {
   header?.classList.toggle("is-open", isOpen);
   menuButton.setAttribute("aria-expanded", String(isOpen));
   menuButton.setAttribute("aria-label", isOpen ? (isEnglish ? "Close menu" : "关闭菜单") : (isEnglish ? "Open menu" : "打开菜单"));
+  if (isOpen) header.querySelector('.main-nav a')?.focus();
+});
+
+header?.addEventListener("focusout", (event) => {
+  if (header.classList.contains("is-open") && !header.contains(event.relatedTarget)) closeNavigation();
 });
 
 document.querySelectorAll(".main-nav a").forEach((link) => {

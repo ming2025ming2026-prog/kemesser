@@ -37,10 +37,9 @@ async function main() {
     await context.route('**/*', (route) => new URL(route.request().url()).origin === origin ? route.continue() : route.abort());
     const page = await context.newPage();
     page.on('pageerror', (error) => report.errors.push({ url: page.url(), message: error.message }));
-    for (const width of [1440, 768, 390, 320, 1024, 1280, 1920]) {
-      await page.setViewportSize({ width, height: 900 });
+    for (const width of [1440, 768, 390, 320, 1024, 1280, 1920, 844, 640]) {
+      await page.setViewportSize({ width, height: width === 844 ? 390 : width === 640 ? 450 : width === 320 ? 568 : width === 390 ? 844 : 900 });
       for (const file of pages) {
-        if (![1440, 390].includes(width) && !['index.html', 'en/index.html', 'thawing.html', 'en/thawing.html', 'about.html', 'en/about.html', 'product-cellhome.html', 'en/product-cellhome.html', 'contact.html', 'en/contact.html'].includes(file)) continue;
         await page.goto(`${origin}/${file}`, { waitUntil: 'domcontentloaded' });
         const firstHeadingVisible = await page.locator('main h1').evaluate((el) => {
           if (el.getBoundingClientRect().top > innerHeight) return true;

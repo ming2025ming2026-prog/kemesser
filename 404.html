@@ -4,13 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>页面未找到 | 科默斯科技</title>
+    <title>页面未找到 / Page Not Found | 科默斯科技</title>
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="stylesheet" href="/styles.css?v=20261025-4" />
+    <link rel="stylesheet" href="/styles.css?v=20261026-1" />
     <script>
       (() => {
         const path = window.location.pathname.toLowerCase();
         const legacyRoutes = [
+          [/^\/products\/25541021_7252365_7252368(?:_|\.html)/, "/product-cellhome.html"],
+          [/^\/products\/25541021_7252446_7252449(?:_|\.html)/, "/product-thawhome.html"],
+          [/^\/products\/25541021_7252365_0(?:_|\.html)/, "/cryo.html"],
+          [/^\/products\/25541021_7252446_0(?:_|\.html)/, "/thawing.html"],
           [/^\/bk_25523084(?:\.html)?$/, "/contact.html"],
           [/^\/bk_25539801(?:\.html)?$/, "/about.html"],
           [/^\/doc_25542276(?:_|\.html)/, "/downloads.html"],
@@ -38,11 +42,12 @@
     <main id="main-content" tabindex="-1">
       <section class="page-hero">
         <p class="eyebrow">404</p>
-        <h1>页面未找到</h1>
+        <h1>页面未找到 / <span lang="en">Page Not Found</span></h1>
         <p>请检查访问地址，或从科默斯网站首页继续浏览。</p>
+        <p lang="en">Please check the address or continue from the Kemesser homepage.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="/index.html">进入中文站</a>
-          <a class="btn btn-ghost" href="/en/index.html" lang="en">Visit English Site</a>
+          <a class="btn btn-ghost dark" href="/en/index.html" lang="en">Visit English Site</a>
         </div>
       </section>
     </main>
