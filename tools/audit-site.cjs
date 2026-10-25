@@ -108,7 +108,7 @@ async function main() {
       await page.goto(`${origin}/en/index.html`);
       await page.waitForFunction(() => document.querySelector('video').currentTime > 0.2);
       const video = await page.locator('video').evaluate((el) => ({ width: el.videoWidth, height: el.videoHeight, source: el.currentSrc, playing: !el.paused, time: el.currentTime }));
-      if (!video.source.endsWith('kemesser-thawing-intro.mp4')) throw new Error('Default video quality downgraded');
+      if (!video.source.endsWith('kemesser-thawing-web.mp4') || video.width !== 1280 || video.height !== 720) throw new Error('Unexpected default video source or resolution');
       await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
       await page.waitForFunction(() => document.querySelector('video').paused);
       await page.evaluate(() => scrollTo(0, 0));

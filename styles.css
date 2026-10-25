@@ -26,6 +26,9 @@ body {
 }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; }
+.btn:active, .table-link:active, .menu-button:active, .nav-dropdown-trigger:active {
+  transition-duration: 0s;
+}
 [hidden] { display: none !important; }
 html { scroll-padding-top: 112px; }
 .skip-link {
@@ -472,7 +475,7 @@ html[lang="en"] .belief-heading h2 {
 }
 .hero-video {
   object-fit: cover;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.24s ease;
 }
 .hero-video.is-ready {

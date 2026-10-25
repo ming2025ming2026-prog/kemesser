@@ -76,25 +76,21 @@ if (heroVideo) {
       connection?.saveData ||
       /(^|-)2g/.test(connection?.effectiveType || "")
     );
+    let sourceChanged = false;
     heroVideo.querySelectorAll("source[data-src], source[data-src-high]").forEach((source) => {
-      source.src = source.dataset.srcHigh
+      const nextSource = source.dataset.srcHigh
         ? (useLightVideo ? source.dataset.srcLow : source.dataset.srcHigh)
         : source.dataset.src;
+      if (source.getAttribute("src") !== nextSource) {
+        source.src = nextSource;
+        sourceChanged = true;
+      }
       source.removeAttribute("data-src");
       source.removeAttribute("data-src-high");
       source.removeAttribute("data-src-low");
     });
-    heroVideo.load();
+    if (sourceChanged) heroVideo.load();
     tryPlayHeroVideo();
-  };
-
-  const scheduleHeroVideo = () => {
-    const loadWhenIdle = () => window.setTimeout(loadHeroVideo, 80);
-    if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(loadWhenIdle, { timeout: 350 });
-    } else {
-      loadWhenIdle();
-    }
   };
 
   heroVideo.addEventListener("loadeddata", () => {
@@ -125,12 +121,29 @@ if (heroVideo) {
   document.addEventListener("pointerdown", loadHeroVideo, { once: true, passive: true });
   document.addEventListener("touchstart", loadHeroVideo, { once: true, passive: true });
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", scheduleHeroVideo, { once: true });
-  } else {
-    scheduleHeroVideo();
-  }
+  loadHeroVideo();
 }
+
+// Warm the next document on intent without intercepting or delaying navigation.
+const prefetchedPages = new Set();
+const prefetchOnIntent = (event) => {
+  const link = event.target.closest('a[href]');
+  if (!link || link.download || link.target === "_blank") return;
+  const connection = navigator.connection;
+  if (connection?.saveData || /2g/.test(connection?.effectiveType || "")) return;
+  const url = new URL(link.href, location.href);
+  if (url.origin !== location.origin || !/\.html$/.test(url.pathname) || url.pathname.endsWith("/admin.html")) return;
+  url.hash = "";
+  if (url.href === location.href || prefetchedPages.has(url.href) || prefetchedPages.size >= 4) return;
+  prefetchedPages.add(url.href);
+  const hint = document.createElement("link");
+  hint.rel = "prefetch";
+  hint.href = url.href;
+  document.head.append(hint);
+};
+document.addEventListener("pointerover", prefetchOnIntent, { passive: true });
+document.addEventListener("focusin", prefetchOnIntent);
+document.addEventListener("touchstart", prefetchOnIntent, { passive: true });
 
 if (footer) {
   footer.innerHTML = isEnglish ? `
@@ -384,32 +397,6 @@ document.querySelectorAll(".main-nav a").forEach((link) => {
   link.addEventListener("click", closeNavigation);
 });
 window.matchMedia("(max-width: 1200px)").addEventListener("change", closeNavigation);
-
-// Warm up a local page only after the visitor shows intent to open it.
-// This keeps initial loading light while making navigation feel immediate.
-const prefetchedPages = new Set();
-const prefetchPage = (href) => {
-  if (!href) return;
-  const connection = navigator.connection;
-  if (connection?.saveData || /(^|-)2g/.test(connection?.effectiveType || "")) return;
-  const url = new URL(href, window.location.href);
-  if (url.origin !== window.location.origin || !url.pathname.endsWith(".html")) return;
-  if (prefetchedPages.has(url.href) || url.href === window.location.href) return;
-  prefetchedPages.add(url.href);
-  const prefetch = document.createElement("link");
-  prefetch.rel = "prefetch";
-  prefetch.href = url.href;
-  prefetch.as = "document";
-  document.head.append(prefetch);
-};
-
-document.querySelectorAll('a[href$=".html"], [data-card-link]').forEach((link) => {
-  const href = link.getAttribute("href") || link.dataset.cardLink;
-  const warmPage = () => prefetchPage(href);
-  link.addEventListener("pointerenter", warmPage, { once: true, passive: true });
-  link.addEventListener("focus", warmPage, { once: true });
-  link.addEventListener("touchstart", warmPage, { once: true, passive: true });
-});
 
 document.addEventListener("click", (event) => {
   if (!header?.contains(event.target)) closeNavigation();
